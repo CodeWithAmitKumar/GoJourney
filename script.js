@@ -160,9 +160,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Test toast on page load
-    setTimeout(function() {
-        showToast('Page loaded successfully');
-    }, 1000);
 }); 

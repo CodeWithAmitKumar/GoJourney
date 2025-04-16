@@ -370,45 +370,6 @@
         // Verify DOM loading
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Document loaded from inline script');
-            
-            // Add a visible debug button
-            const debugBtn = document.createElement('button');
-            debugBtn.textContent = 'Test Toast';
-            debugBtn.style.position = 'fixed';
-            debugBtn.style.bottom = '20px';
-            debugBtn.style.right = '20px';
-            debugBtn.style.zIndex = '9999';
-            debugBtn.style.padding = '10px 20px';
-            debugBtn.style.backgroundColor = '#007bff';
-            debugBtn.style.color = 'white';
-            debugBtn.style.border = 'none';
-            debugBtn.style.borderRadius = '5px';
-            debugBtn.style.cursor = 'pointer';
-            
-            debugBtn.addEventListener('click', function() {
-                console.log('Debug button clicked');
-                // Direct toast implementation for debugging
-                const toastContainer = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = 'toast-notification';
-                toast.textContent = 'Direct toast test';
-                toastContainer.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.classList.add('show');
-                }, 10);
-                
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        if (toast.parentNode) {
-                            toast.remove();
-                        }
-                    }, 400);
-                }, 3000);
-            });
-            
-            document.body.appendChild(debugBtn);
         });
 
         // Direct implementation for Explore More button
