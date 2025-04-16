@@ -52,12 +52,32 @@
         <div class="destination-cards">
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="images/destinations/paris.jpg" alt="Paris">
+                    <img src="images/destinations/puri.jpg" alt="Jagannath Dham">
                     <div class="destination-tag">FEATURED</div>
                 </div>
                 <div class="destination-info">
-                    <h3>Paris, France</h3>
-                    <p class="destination-description">City of lights and romance</p>
+                    <h3>Puri , Odisha</h3>
+                    <p class="destination-description">Shree Jagannath Dham </p>
+                    <div class="destination-meta">
+                        <div class="destination-rating">
+                            <span class="star">★</span>
+                            <span>5.0</span>
+                        </div>
+                        <div class="destination-price">
+                            <span>From</span>
+                            <span class="price">Rs.1100.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="destination-card">
+                <div class="destination-image">
+                    <img src="images/destinations/shreeRam.jpg" alt="Shree Ram Temple">
+                </div>
+                <div class="destination-info">
+                    <h3>Bhubaneswer , Odisha</h3>
+                    <p class="destination-description">Shree Ram Temple</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
@@ -65,7 +85,7 @@
                         </div>
                         <div class="destination-price">
                             <span>From</span>
-                            <span class="price">$899</span>
+                            <span class="price">Rs.799.00</span>
                         </div>
                     </div>
                 </div>
@@ -73,31 +93,11 @@
             
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="images/destinations/bali.jpg" alt="Bali">
+                    <img src="images/destinations/chandrabhaga.jpg" alt="Chandrabhaga Sea Beach">
                 </div>
                 <div class="destination-info">
-                    <h3>Bali, Indonesia</h3>
-                    <p class="destination-description">Paradise island getaway</p>
-                    <div class="destination-meta">
-                        <div class="destination-rating">
-                            <span class="star">★</span>
-                            <span>4.9</span>
-                        </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">$799</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="destination-card">
-                <div class="destination-image">
-                    <img src="images/destinations/kyoto.jpg" alt="Kyoto">
-                </div>
-                <div class="destination-info">
-                    <h3>Kyoto, Japan</h3>
-                    <p class="destination-description">Ancient temples and gardens</p>
+                    <h3>Chandrabhaga , Odisha</h3>
+                    <p class="destination-description">Beautiful Sea Beach</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
@@ -105,7 +105,7 @@
                         </div>
                         <div class="destination-price">
                             <span>From</span>
-                            <span class="price">$1,099</span>
+                            <span class="price">Rs.1,099.00</span>
                         </div>
                     </div>
                 </div>
@@ -113,19 +113,19 @@
             
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="images/destinations/santorini.jpg" alt="Santorini">
+                    <img src="images/destinations/konark.jpg" alt="Konark Temple">
                 </div>
                 <div class="destination-info">
-                    <h3>Santorini, Greece</h3>
-                    <p class="destination-description">Stunning white and blue views</p>
+                    <h3>Konark , Odisha</h3>
+                    <p class="destination-description">Sun Temple</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
-                            <span>4.9</span>
+                            <span>4.5</span>
                         </div>
                         <div class="destination-price">
                             <span>From</span>
-                            <span class="price">$949</span>
+                            <span class="price">Rs.1245.00</span>
                         </div>
                     </div>
                 </div>
@@ -133,19 +133,19 @@
             
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="images/destinations/newyork.jpg" alt="New York">
+                    <img src="images/destinations/tunki.jpg" alt="Tunki Waterfall">
                 </div>
                 <div class="destination-info">
-                    <h3>New York, USA</h3>
-                    <p class="destination-description">The city that never sleeps</p>
+                    <h3>Mayurbhanj , Odisha</h3>
+                    <p class="destination-description">Beaty Of Waterfall</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
-                            <span>4.6</span>
+                            <span>4.0</span>
                         </div>
                         <div class="destination-price">
                             <span>From</span>
-                            <span class="price">$849</span>
+                            <span class="price">Rs.599.00</span>
                         </div>
                     </div>
                 </div>
@@ -153,11 +153,11 @@
             
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="images/destinations/capetown.jpg" alt="Cape Town">
+                    <img src="images/destinations/chilika.jpg" alt="Chilika lake">
                 </div>
                 <div class="destination-info">
-                    <h3>Cape Town, South Africa</h3>
-                    <p class="destination-description">Where mountains meet the sea</p>
+                    <h3>Ganjam , Odisha</h3>
+                    <p class="destination-description">The largest brackish water lagoon in Asia</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
@@ -165,7 +165,7 @@
                         </div>
                         <div class="destination-price">
                             <span>From</span>
-                            <span class="price">$999</span>
+                            <span class="price">Rs.999.00</span>
                         </div>
                     </div>
                 </div>
@@ -173,19 +173,19 @@
             
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="images/destinations/maldives.jpg" alt="Maldives">
+                    <img src="images/destinations/itr.webp" alt="Itr">
                 </div>
                 <div class="destination-info">
-                    <h3>Maldives Islands</h3>
-                    <p class="destination-description">Crystal clear waters and luxury</p>
+                    <h3>Itr , Balasore </h3>
+                    <p class="destination-description">The Missile city </p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
-                            <span>4.9</span>
+                            <span>4.0</span>
                         </div>
                         <div class="destination-price">
                             <span>From</span>
-                            <span class="price">$1,299</span>
+                            <span class="price">Rs.1,299.00</span>
                         </div>
                     </div>
                 </div>
@@ -193,19 +193,19 @@
             
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="images/destinations/dubai.jpg" alt="Dubai">
+                    <img src="images/destinations/barheipani.png" alt="Barheipani">
                 </div>
                 <div class="destination-info">
-                    <h3>Dubai, UAE</h3>
-                    <p class="destination-description">Modern luxury in the desert</p>
+                    <h3>Mayurbhanj , Odisha</h3>
+                    <p class="destination-description"> Two-tiered waterfall</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
-                            <span>4.8</span>
+                            <span>3.8</span>
                         </div>
                         <div class="destination-price">
                             <span>From</span>
-                            <span class="price">$1,199</span>
+                            <span class="price">Rs.700.00</span>
                         </div>
                     </div>
                 </div>
@@ -238,12 +238,12 @@
         </div>
     </section>
     
-    <section id="reviews" class="reviews-section">
+    <section id="services" class="reviews-section">
         <h2>Meet Clients Reviews</h2>
         <div class="reviews-container">
             <div class="review-card">
                 <div class="review-image">
-                    <img src="images/reviews/client1.jpg" alt="Client 1">
+                    <img src="images/reviews/client1.png" alt="Client 1">
                 </div>
                 <div class="review-content">
                     <h3>Harekrushna Pradhan</h3>
@@ -277,7 +277,7 @@
             
             <div class="review-card">
                 <div class="review-image">
-                    <img src="images/reviews/client3.jpg" alt="Client 3">
+                    <img src="images/reviews/client3.png" alt="Client 3">
                 </div>
                 <div class="review-content">
                     <h3>Susree Jena</h3>
@@ -294,7 +294,7 @@
             
             <div class="review-card">
                 <div class="review-image">
-                    <img src="images/reviews/client4.jpg" alt="Client 4">
+                    <img src="images/reviews/client4.png" alt="Client 4">
                 </div>
                 <div class="review-content">
                     <h3>Snehasis Behera</h3>
@@ -308,6 +308,14 @@
                     <p>"As a family of five, finding suitable travel plans can be challenging. GoJourney understood our needs perfectly and created a family-friendly tour of Lingaraj Temple , Bhubaneswer that kept everyone from our 5-year-old to my wife's parents engaged and happy!"</p>
                 </div>
             </div>
+        </div>
+    </section>
+    
+    <section id="need-help" class="help-section">
+        <div class="help-content">
+            <h2>Need Help?</h2>
+            <p>Our travel experts are ready to assist you in planning your perfect journey. Get in touch with us today!</p>
+            <button class="cta-button" id="contactBtn">Contact Us</button>
         </div>
     </section>
     

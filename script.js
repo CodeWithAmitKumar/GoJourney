@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const showLoginLink = document.getElementById('showLogin');
     const showSignupLink = document.getElementById('showSignup');
     const exploreMoreBtn = document.getElementById('exploreMoreBtn');
+    const contactBtn = document.getElementById('contactBtn');
     
     console.log('Explore More Button:', exploreMoreBtn);
     
@@ -137,6 +138,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             return false;
         };
+    }
+    
+    // Contact button handling
+    if (contactBtn) {
+        contactBtn.addEventListener('click', function() {
+            showToast('Our experts will contact you soon!', 3000);
+        });
     }
     
     // Form validation
