@@ -8,80 +8,161 @@ window.addEventListener('scroll', function() {
     }
 });
 
-// Modal functionality
+// Simple function to show a toast notification
+function showToast(message, duration = 2000) {
+    // Get the toast container
+    const toastContainer = document.getElementById('toast-container');
+    
+    // Check if there's already a toast notification
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    
+    // Add toast to container
+    toastContainer.appendChild(toast);
+    
+    // Force a reflow to ensure the transition works
+    void toast.offsetWidth;
+    
+    // Make the toast visible
+    toast.classList.add('show');
+    
+    // Remove the toast after duration
+    setTimeout(() => {
+        toast.classList.remove('show');
+        
+        // Remove from DOM after fade out
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 400);
+    }, duration);
+}
+
+// Make the function globally accessible
+window.showToast = showToast;
+
+// Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Modal elements
-    const loginBtn = document.getElementById('loginBtn');
-    const signupBtn = document.getElementById('signupBtn');
+    console.log('DOM fully loaded');
+    
+    // Get references to elements
     const loginModal = document.getElementById('loginModal');
     const signupModal = document.getElementById('signupModal');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
     const closeBtns = document.querySelectorAll('.close-btn');
-    const showSignup = document.getElementById('showSignup');
-    const showLogin = document.getElementById('showLogin');
+    const showLoginLink = document.getElementById('showLogin');
+    const showSignupLink = document.getElementById('showSignup');
+    const exploreMoreBtn = document.getElementById('exploreMoreBtn');
     
-    // Open login modal
-    loginBtn.addEventListener('click', function() {
-        loginModal.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
-    });
+    console.log('Explore More Button:', exploreMoreBtn);
     
-    // Open signup modal
-    signupBtn.addEventListener('click', function() {
-        signupModal.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
-    });
+    // Function to open a modal
+    function openModal(modal) {
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
     
-    // Close modals when clicking X
+    // Function to close a modal
+    function closeModal(modal) {
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    // Set up button event listeners
+    if (loginBtn) {
+        loginBtn.addEventListener('click', function() {
+            openModal(loginModal);
+        });
+    }
+    
+    if (signupBtn) {
+        signupBtn.addEventListener('click', function() {
+            openModal(signupModal);
+        });
+    }
+    
+    // Close buttons
     closeBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {
-            loginModal.style.display = 'none';
-            signupModal.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Enable scrolling
+            closeModal(loginModal);
+            closeModal(signupModal);
         });
     });
     
-    // Close modals when clicking outside of them
-    window.addEventListener('click', function(event) {
-        if (event.target === loginModal) {
-            loginModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        if (event.target === signupModal) {
-            signupModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+    // Switch between forms
+    if (showLoginLink) {
+        showLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeModal(signupModal);
+            openModal(loginModal);
+        });
+    }
+    
+    if (showSignupLink) {
+        showSignupLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeModal(loginModal);
+            openModal(signupModal);
+        });
+    }
+    
+    // Close when clicking outside
+    window.addEventListener('click', function(e) {
+        if (e.target === loginModal) closeModal(loginModal);
+        if (e.target === signupModal) closeModal(signupModal);
     });
     
-    // Switch between login and signup modals
-    showSignup.addEventListener('click', function(e) {
-        e.preventDefault();
-        loginModal.style.display = 'none';
-        signupModal.style.display = 'block';
-    });
+    // Special handling for Explore More button
+    if (exploreMoreBtn) {
+        exploreMoreBtn.onclick = function(e) {
+            e.preventDefault();
+            console.log('Explore More clicked');
+            showToast('Login to explore more places');
+            
+            // Redirect to login after 2 seconds
+            setTimeout(function() {
+                openModal(loginModal);
+            }, 2000);
+            
+            return false;
+        };
+    }
     
-    showLogin.addEventListener('click', function(e) {
-        e.preventDefault();
-        signupModal.style.display = 'none';
-        loginModal.style.display = 'block';
-    });
-    
-    // Form submissions
+    // Form validation
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
     
-    loginForm.addEventListener('submit', function(e) {
-        // Form will submit to auth/login.php
-    });
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            // Form will submit to auth/login.php
+        });
+    }
     
-    signupForm.addEventListener('submit', function(e) {
-        const password = document.getElementById('signup-password').value;
-        const confirmPassword = document.getElementById('signup-confirm').value;
-        
-        // Check if passwords match
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            alert('Passwords do not match!');
-        }
-        // If they match, form will submit to auth/register.php
-    });
+    if (signupForm) {
+        signupForm.addEventListener('submit', function(e) {
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+            }
+        });
+    }
+    
+    // Test toast on page load
+    setTimeout(function() {
+        showToast('Page loaded successfully');
+    }, 1000);
 }); 
