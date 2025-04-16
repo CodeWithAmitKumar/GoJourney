@@ -21,7 +21,7 @@
         <a href="index.php" class="logo">GoJourney</a>
         <div class="nav-links">
             <a href="#home">Home</a>
-            <a href="#">About</a>
+            <a href="#about">About</a>
             <a href="#">Services</a>
             <a href="#">ContactUs</a>
         </div>
@@ -39,6 +39,17 @@
         </div>
     </section>
     
+    <section id="about" class="about-section">
+        <div class="about-content">
+            <h2>About GoJourney</h2>
+            <p>At GoJourney, we believe that travel is more than just visiting new places - it's about creating memories that last a lifetime. Our mission is to help you discover the world's most beautiful destinations and plan your perfect journey.</p>
+            <p>With our expert travel guides and personalized recommendations, we make travel planning simple, enjoyable, and accessible for everyone.</p>
+        </div>
+        <div class="about-image">
+            <img src="images/background/about-illustration.jpg" alt="Travel Illustration">
+        </div>
+    </section>
+    
     <div class="content">
         <!-- Your page content will go here -->
     </div>
@@ -48,6 +59,7 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Login</h2>
+            <h3>Welcome back! Please enter your details to login.</h3>
             <form id="loginForm" action="auth/login.php" method="post">
                 <div class="form-group">
                     <label for="login-email">Email</label>
@@ -68,6 +80,7 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Create Account</h2>
+            <h3>Create an account to start your journey with GoJourney.</h3>
             <form id="signupForm" action="auth/register.php" method="post">
                 <div class="form-group">
                     <label for="signup-name">Full Name</label>
