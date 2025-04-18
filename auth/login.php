@@ -47,17 +47,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $row['password_hash'])) {
             error_log("User logged in successfully: $email");
             
+            // Clear any existing session data
+            $_SESSION = array();
+            
+            // Regenerate session ID to prevent session fixation
+            session_regenerate_id(true);
+            
             // Password is correct, create session
             $_SESSION['loggedin'] = true;
             $_SESSION['user_id'] = $row['user_id'];
             $_SESSION['name'] = $row['full_name'];
             $_SESSION['email'] = $row['user_email'];
             
+            // Store password hash version to detect changes
+            $_SESSION['password_hash_version'] = md5($row['password_hash']);
+            
+            // Set last login time
+            $_SESSION['last_activity'] = time();
+            
+            // Update last login time in database if you have such a field
+            // mysqli_query($conn, "UPDATE users SET last_login = NOW() WHERE user_id = ".$row['user_id']);
+            
             // Set success message
             $_SESSION['success'] = "Login successful! Welcome back, " . $row['full_name'] . "!";
             
             // Redirect to dashboard
-            header("Location: ../dashboard.php");
+            header("Location: ../dashboard/index.php");
             exit();
         } else {
             // Password is incorrect

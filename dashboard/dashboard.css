@@ -1,0 +1,576 @@
+.dashboard-container {
+    max-width: 1200px;
+    margin: 100px auto 50px;
+    padding: 20px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.welcome-message {
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.welcome-message .user-name {
+    font-weight: 700;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+.welcome-subtitle {
+    font-size: 0.95rem;
+    color: #666;
+    margin-top: 8px;
+    font-weight: normal;
+    line-height: 1.5;
+    max-width: 90%;
+}
+
+/* Welcome Card */
+.welcome-card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    border-left: 5px solid #007bff;
+    transition: all 0.3s ease;
+}
+
+.welcome-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-card h2 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.welcome-card p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.welcome-card .quote {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    margin-top: 20px;
+}
+
+.welcome-card .quote p {
+    font-style: italic;
+    color: #555;
+    margin: 0;
+    padding-left: 30px;
+}
+
+.quote-icon {
+    color: #007bff;
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+/* User Info Card */
+.user-info-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.user-info-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.user-info-card h3 {
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info-card h3 i {
+    color: #007bff;
+}
+
+.user-info-card p {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.edit-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+.edit-profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* Dark Theme Styles */
+body.dark-theme .welcome-card,
+body.dark-theme .user-info-card {
+    background-color: #2a2a2a;
+    color: #f5f5f5;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .welcome-card {
+    border-left: 5px solid #00c6ff;
+}
+
+body.dark-theme .welcome-card h2,
+body.dark-theme .user-info-card h3 {
+    color: #f5f5f5;
+}
+
+body.dark-theme .welcome-card p,
+body.dark-theme .user-info-card p,
+body.dark-theme .welcome-subtitle {
+    color: #aaa;
+}
+
+body.dark-theme .welcome-card .quote {
+    background-color: #333;
+}
+
+body.dark-theme .welcome-card .quote p {
+    color: #ccc;
+}
+
+/* Alert styles */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    position: relative;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+body.dark-theme .alert-success {
+    background-color: rgba(40, 167, 69, 0.2);
+    color: #98c379;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+body.dark-theme .alert-error {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #e06c75;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+/* Search bar styles */
+.search-container {
+    position: relative;
+    width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px;
+    padding-right: 40px;
+    border: 1px solid #e0e0e0;
+    border-radius: 25px;
+    background-color: #f5f5f5;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    background-color: #fff;
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.search-icon:hover {
+    color: #007bff;
+}
+
+.logout-btn {
+    padding: 8px 16px;
+    background: linear-gradient(90deg, #ff5f6d, #ffc371);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 95, 109, 0.2);
+}
+
+.dashboard-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Navigation Icons Styles */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.nav-links a, .nav-links button {
+    font-size: 1.2rem;
+    color: #333;
+    transition: all 0.3s ease;
+    padding: 8px;
+}
+
+.nav-links a:hover {
+    color: #007bff;
+    transform: translateY(-2px);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.theme-toggle-btn:hover {
+    color: #007bff;
+    transform: translateY(-2px);
+}
+
+body.dark-theme {
+    background-color: #1a1a1a;
+    color: #f5f5f5;
+}
+
+body.dark-theme .navbar {
+    background-color: rgba(20, 20, 20, 0.9);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .nav-links a, 
+body.dark-theme .theme-toggle-btn,
+body.dark-theme .logo {
+    color: #f5f5f5;
+}
+
+body.dark-theme .dashboard-content {
+    background-color: #2a2a2a;
+    color: #f5f5f5;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .welcome-message {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    font-weight: 700;
+    text-shadow: none;
+}
+
+body.dark-theme .dashboard-header {
+    border-bottom: 1px solid #444;
+}
+
+body.dark-theme .search-input {
+    background-color: #3a3a3a;
+    border-color: #444;
+    color: #f5f5f5;
+}
+
+body.dark-theme .search-input:focus {
+    border-color: #007bff;
+    background-color: #333;
+}
+
+body.dark-theme .search-icon {
+    color: #aaa;
+}
+
+body.dark-theme .search-icon:hover {
+    color: #007bff;
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-icon {
+    font-size: 1.8rem;
+}
+
+.profile-icon i {
+    font-size: 1.8rem;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 1;
+    overflow: hidden;
+}
+
+body.dark-theme .dropdown-content {
+    background-color: #2a2a2a;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+body.dark-theme .dropdown-content a {
+    color: #f5f5f5;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+    color: #007bff;
+}
+
+body.dark-theme .dropdown-content a:hover {
+    background-color: #3a3a3a;
+}
+
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Dashboard Welcome section */
+.dashboard-welcome {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.dashboard-welcome h1 {
+    font-size: 2.2rem;
+    color: #333;
+    margin-bottom: 15px;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+.dashboard-welcome p {
+    color: #666;
+    line-height: 1.6;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.dashboard-welcome .quote {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    margin-top: 25px;
+    border-left: 4px solid #007bff;
+}
+
+.dashboard-welcome .quote p {
+    font-style: italic;
+    color: #555;
+    margin: 0;
+    padding-left: 30px;
+    font-size: 1rem;
+}
+
+.quote-icon {
+    color: #007bff;
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+/* Dashboard Sections Layout */
+.dashboard-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.user-info-card, 
+.featured-destinations-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.user-info-card:hover, 
+.featured-destinations-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transform: translateY(-5px);
+}
+
+.user-info-card h3,
+.featured-destinations-card h3 {
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3rem;
+}
+
+.user-info-card h3 i,
+.featured-destinations-card h3 i {
+    color: #007bff;
+}
+
+.user-info-card p,
+.featured-destinations-card p {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.edit-profile-btn,
+.view-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+.edit-profile-btn:hover,
+.view-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* Dark Theme Styles */
+body.dark-theme .dashboard-welcome {
+    border-bottom: 1px solid #444;
+}
+
+body.dark-theme .dashboard-welcome p {
+    color: #aaa;
+}
+
+body.dark-theme .dashboard-welcome .quote {
+    background-color: #333;
+    border-left: 4px solid #00c6ff;
+}
+
+body.dark-theme .dashboard-welcome .quote p {
+    color: #ccc;
+}
+
+body.dark-theme .user-info-card, 
+body.dark-theme .featured-destinations-card {
+    background-color: #2a2a2a;
+    color: #f5f5f5;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .user-info-card h3,
+body.dark-theme .featured-destinations-card h3 {
+    color: #f5f5f5;
+}
+
+body.dark-theme .user-info-card p,
+body.dark-theme .featured-destinations-card p {
+    color: #aaa;
+} 

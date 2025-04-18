@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['success'] = "Registration successful! Welcome to GoJourney.";
         
         // Redirect to dashboard
-        header("Location: ../dashboard.php");
+        header("Location: ../dashboard/index.php");
         exit();
     } else {
         // Registration failed
