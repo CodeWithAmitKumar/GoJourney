@@ -53,104 +53,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['name'] = $row['full_name'];
             $_SESSION['email'] = $row['user_email'];
             
-            // Check if dashboard directory exists, if not create a basic one
-            if (!file_exists('../dashboard')) {
-                error_log("Dashboard directory does not exist, creating it");
-                mkdir('../dashboard', 0755, true);
-                
-                // Create a basic dashboard index file (same as in register.php)
-                $dashboard_content = '<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoJourney Dashboard</title>
-    <link rel="stylesheet" href="../style.css">
-    <style>
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 120px auto 50px;
-            padding: 20px;
-        }
-        .welcome-banner {
-            background: linear-gradient(90deg, #007bff, #00c6ff);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2);
-        }
-        .dashboard-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        .logout-btn {
-            display: inline-block;
-            background: #ff5e62;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <a href="../index.php" class="logo">GoJourney</a>
-        <div class="nav-links">
-            <a href="../index.php">Home</a>
-            <a href="../index.php#about">About</a>
-            <a href="../index.php#services">Services</a>
-            <a href="../index.php#need-help">Need Help</a>
-            <a href="../index.php#contact">Contact Us</a>
-        </div>
-    </nav>
-    
-    <div class="dashboard-container">
-        <div class="welcome-banner">
-            <h1>Welcome, <?php echo isset($_SESSION["name"]) ? $_SESSION["name"] : "User"; ?>!</h1>
-            <p>You have successfully logged into your GoJourney account.</p>
-            <a href="../auth/logout.php" class="logout-btn">Logout</a>
-        </div>
-        
-        <div class="dashboard-card">
-            <h2>Available Trips</h2>
-            <p>Your personalized journey recommendations will appear here soon.</p>
-        </div>
-        
-        <div class="dashboard-card">
-            <h2>Your Bookings</h2>
-            <p>You have no active bookings at the moment.</p>
-        </div>
-    </div>
-    
-    <script>
-        // Add scrolled class to navbar when scrolling
-        window.addEventListener("scroll", function() {
-            const navbar = document.querySelector(".navbar");
-            if (window.scrollY > 50) {
-                navbar.classList.add("scrolled");
-            } else {
-                navbar.classList.remove("scrolled");
-            }
-        });
-    </script>
-</body>
-</html>';
-                
-                file_put_contents('../dashboard/index.php', $dashboard_content);
-                error_log("Dashboard index file created");
-            }
-            
             // Set success message
             $_SESSION['success'] = "Login successful! Welcome back, " . $row['full_name'] . "!";
             
             // Redirect to dashboard
-            header("Location: ../dashboard/index.php");
+            header("Location: ../dashboard.php");
             exit();
         } else {
             // Password is incorrect

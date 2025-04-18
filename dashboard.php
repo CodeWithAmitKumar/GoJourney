@@ -3,7 +3,7 @@ session_start();
 
 // Check if user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: ../index.php");
+    header("Location: index.php");
     exit();
 }
 ?>
@@ -13,7 +13,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - GoJourney</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/png" href="images/logo&svg/svg2.png">
+    <link rel="stylesheet" href="style.css">
     <style>
         .dashboard-container {
             max-width: 1200px;
@@ -60,19 +61,19 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 </head>
 <body>
     <nav class="navbar">
-        <a href="../index.php" class="logo">GoJourney</a>
+        <a href="index.php" class="logo">GoJourney</a>
         <div class="nav-links">
-            <a href="../index.php">Home</a>
-            <a href="#">About</a>
-            <a href="#">Services</a>
-            <a href="#">ContactUs</a>
+            <a href="index.php">Home</a>
+            <a href="index.php#about">About</a>
+            <a href="index.php#services">Services</a>
+            <a href="index.php#contact">ContactUs</a>
         </div>
     </nav>
     
     <div class="dashboard-container">
         <div class="dashboard-header">
             <div class="welcome-message">Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</div>
-            <a href="../auth/logout.php" class="logout-btn">Logout</a>
+            <a href="auth/logout.php" class="logout-btn">Logout</a>
         </div>
         
         <div class="dashboard-content">
@@ -87,6 +88,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         </div>
     </div>
     
-    <script src="../script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html> 
