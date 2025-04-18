@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoJourney</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Note: The hero background uses an image from images/background/home.jpg -->
 </head>
 <body>
@@ -18,6 +19,12 @@
         echo "<div class='error-message'>" . $_SESSION['error'] . "</div>";
         unset($_SESSION['error']);
     }
+    
+    // Display success messages if any
+    if (isset($_SESSION['success'])) {
+        echo "<div class='success-message'>" . $_SESSION['success'] . "</div>";
+        unset($_SESSION['success']);
+    }
     ?>
 
     <nav class="navbar">
@@ -26,8 +33,7 @@
             <a href="#home">Home</a>
             <a href="#about">About</a>
             <a href="#services">Services</a>
-
-            <a href="#">ContactUs</a>
+            <a href="#contact">ContactUs</a>
         </div>
     </nav>
     
@@ -137,7 +143,7 @@
                 </div>
                 <div class="destination-info">
                     <h3>Mayurbhanj , Odisha</h3>
-                    <p class="destination-description">Beaty Of Waterfall</p>
+                    <p class="destination-description">Tunki Waterfall</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
@@ -157,7 +163,7 @@
                 </div>
                 <div class="destination-info">
                     <h3>Ganjam , Odisha</h3>
-                    <p class="destination-description">The largest brackish water lagoon in Asia</p>
+                    <p class="destination-description">Chilika - The largest brackish water lagoon in Asia</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
@@ -197,7 +203,7 @@
                 </div>
                 <div class="destination-info">
                     <h3>Mayurbhanj , Odisha</h3>
-                    <p class="destination-description"> Two-tiered waterfall</p>
+                    <p class="destination-description"> Barheipani - Two-tiered waterfall</p>
                     <div class="destination-meta">
                         <div class="destination-rating">
                             <span class="star">★</span>
@@ -229,7 +235,7 @@
 
             <p>At GoJourney, we believe every journey begins with a dream. That dream deserves more than just a map — it needs heart, inspiration, and a touch of magic. We handpick stories, hidden gems, and travel experiences that stir the soul and awaken curiosity.</p>
 
-            <p>Pack your bags — or just your imagination — and let GoJourney be your window to the world. The adventure of a lifetime might be just one click away.</p>
+            <p>Pack your bags — or just your imagination — and let GoJourney be your window to the world. The adventure of a lifetime might be just one click away. </p>
 
 
         </div>
@@ -288,7 +294,7 @@
                         <span class="star">★</span>
                         <span class="star half">★</span>
                     </div>
-                    <p>"My husband and I used GoJourney for Picnic Party in Chandrabhaga Sea Beach. The itinerary they crafted was perfect - a beautiful balance of relaxation and adventure. Their attention to detail made our Picnic trip truly magical."</p>
+                    <p>"I used GoJourney for Picnic Party in Chandrabhaga Sea Beach. The itinerary they crafted was perfect - a beautiful balance of relaxation and adventure. Their attention to detail made my  trip truly magical."</p>
                 </div>
             </div>
             
@@ -311,14 +317,48 @@
         </div>
     </section>
     
-    <section id="need-help" class="help-section">
-        <div class="help-content">
-            <h2>Need Help?</h2>
-            <p>Our travel experts are ready to assist you in planning your perfect journey. Get in touch with us today!</p>
-            <button class="cta-button" id="contactBtn">Contact Us</button>
+    <section id="contact" class="contact-section">
+        <div class="contact-content">
+            <div class="contact-info">
+                <h2>Contact Us</h2>
+                <h3>We'd love to hear from you!</h3>
+                <p>Have questions, suggestions, or feedback about your experience with GoJourney? Our team is dedicated to making your travel experience exceptional.</p>
+                
+                <div class="contact-details">
+                    <div class="contact-detail-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-detail-text">support@gojourney.com</div>
+                    </div>
+                    
+                    <div class="contact-detail-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-detail-text">+91 9876543210</div>
+                    </div>
+                    
+                    <div class="contact-detail-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-detail-text">123 Travel Road, Bhubaneswar, Odisha</div>
+                    </div>
+                </div>
+                
+                <button class="feedback-btn" id="feedbackBtn">Share Your Feedback</button>
+            </div>
+            
+            <div class="contact-visual">
+                <div class="contact-visual-content">
+                    <h3>Let's Make Your Journey Memorable</h3>
+                    <p>Your next adventure is just a conversation away.</p>
+                </div>
+            </div>
         </div>
     </section>
-    
+
     <div class="content">
         <!-- Your page content will go here -->
     </div>
@@ -373,11 +413,119 @@
         </div>
     </div>
 
+    <!-- Feedback Modal -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Your Feedback</h2>
+            <h3>We value your opinion to improve our services</h3>
+            <form id="feedbackForm" action="submit_feedback.php" method="post">
+                <div class="form-group">
+                    <label for="feedback-name">Your Name</label>
+                    <input type="text" id="feedback-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="feedback-email">Email</label>
+                    <input type="email" id="feedback-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="feedback-subject">Subject</label>
+                    <input type="text" id="feedback-subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="feedback-message">Your Message</label>
+                    <textarea id="feedback-message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
     <script src="script.js"></script>
     <script>
         // Verify DOM loading
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Document loaded from inline script');
+            
+            // Direct handlers for login and signup buttons
+            const loginBtn = document.getElementById('loginBtn');
+            const signupBtn = document.getElementById('signupBtn');
+            const loginModal = document.getElementById('loginModal');
+            const signupModal = document.getElementById('signupModal');
+            const feedbackModal = document.getElementById('feedbackModal');
+            
+            console.log('Login button:', loginBtn);
+            console.log('Signup button:', signupBtn);
+            
+            // Modal show function with animation
+            function showModal(modal) {
+                modal.style.display = 'flex';
+                // Allow display:flex to take effect before adding show class
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            }
+            
+            // Modal hide function with animation
+            function hideModal(modal) {
+                modal.classList.remove('show');
+                // Wait for the opacity transition to complete before hiding
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+            
+            // Login button click handler
+            loginBtn.addEventListener('click', function() {
+                console.log('Login button clicked');
+                showModal(loginModal);
+            });
+            
+            // Signup button click handler
+            signupBtn.addEventListener('click', function() {
+                console.log('Signup button clicked');
+                showModal(signupModal);
+            });
+            
+            // Switch between forms
+            document.getElementById('showLogin').addEventListener('click', function(e) {
+                e.preventDefault();
+                hideModal(signupModal);
+                setTimeout(() => {
+                    showModal(loginModal);
+                }, 300);
+            });
+            
+            document.getElementById('showSignup').addEventListener('click', function(e) {
+                e.preventDefault();
+                hideModal(loginModal);
+                setTimeout(() => {
+                    showModal(signupModal);
+                }, 300);
+            });
+            
+            // Close when clicking outside of modal
+            window.addEventListener('click', function(e) {
+                if (e.target === loginModal) {
+                    hideModal(loginModal);
+                }
+                if (e.target === signupModal) {
+                    hideModal(signupModal);
+                }
+                if (e.target === feedbackModal) {
+                    hideModal(feedbackModal);
+                }
+            });
+            
+            // Close on X button click
+            document.querySelectorAll('.close-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    if (modal) {
+                        hideModal(modal);
+                    }
+                });
+            });
         });
 
         // Direct implementation for Explore More button
@@ -400,7 +548,13 @@
             setTimeout(() => {
                 const loginModal = document.getElementById('loginModal');
                 if (loginModal) {
-                    loginModal.style.display = 'flex';
+                    const showModal = (modal) => {
+                        modal.style.display = 'flex';
+                        setTimeout(() => {
+                            modal.classList.add('show');
+                        }, 10);
+                    };
+                    showModal(loginModal);
                 }
                 
                 // Remove toast
@@ -414,6 +568,15 @@
             
             return false;
         }
+
+        // Feedback button functionality
+        document.getElementById('feedbackBtn').addEventListener('click', function() {
+            const feedbackModal = document.getElementById('feedbackModal');
+            feedbackModal.style.display = 'flex';
+            setTimeout(() => {
+                feedbackModal.classList.add('show');
+            }, 10);
+        });
     </script>
 </body>
 </html>

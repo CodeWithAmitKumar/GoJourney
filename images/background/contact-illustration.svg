@@ -1,0 +1,36 @@
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M400 800C620.914 800 800 620.914 800 400C800 179.086 620.914 0 400 0C179.086 0 0 179.086 0 400C0 620.914 179.086 800 400 800Z" fill="white" fill-opacity="0.05"/>
+  <path d="M650 650C728.843 650 793 585.843 793 507C793 428.157 728.843 364 650 364C571.157 364 507 428.157 507 507C507 585.843 571.157 650 650 650Z" fill="white" fill-opacity="0.07"/>
+  <path d="M150 250C228.843 250 293 185.843 293 107C293 28.1572 228.843 -36 150 -36C71.1573 -36 7 28.1572 7 107C7 185.843 71.1573 250 150 250Z" fill="white" fill-opacity="0.07"/>
+  <path d="M400 700C565.685 700 700 565.685 700 400C700 234.315 565.685 100 400 100C234.315 100 100 234.315 100 400C100 565.685 234.315 700 400 700Z" stroke="white" stroke-opacity="0.1" stroke-width="2"/>
+  <path d="M400 600C510.457 600 600 510.457 600 400C600 289.543 510.457 200 400 200C289.543 200 200 289.543 200 400C200 510.457 289.543 600 400 600Z" stroke="white" stroke-opacity="0.1" stroke-width="2"/>
+  
+  <!-- Mountains -->
+  <path d="M100 550L250 350L300 400L400 250L500 400L600 300L700 500L100 550Z" stroke="white" stroke-opacity="0.2" stroke-width="2" fill="white" fill-opacity="0.05"/>
+  
+  <!-- Sun -->
+  <circle cx="600" cy="200" r="50" fill="white" fill-opacity="0.1"/>
+  <circle cx="600" cy="200" r="40" fill="white" fill-opacity="0.15"/>
+  
+  <!-- Birds -->
+  <path d="M300 150C305 145 310 150 315 145C320 150 325 145 330 150" stroke="white" stroke-opacity="0.2" stroke-width="2"/>
+  <path d="M350 180C355 175 360 180 365 175C370 180 375 175 380 180" stroke="white" stroke-opacity="0.2" stroke-width="2"/>
+  <path d="M250 200C255 195 260 200 265 195C270 200 275 195 280 200" stroke="white" stroke-opacity="0.2" stroke-width="2"/>
+  
+  <!-- Compass Icon -->
+  <circle cx="400" cy="400" r="70" stroke="white" stroke-opacity="0.3" stroke-width="2" fill="white" fill-opacity="0.05"/>
+  <circle cx="400" cy="400" r="10" fill="white" fill-opacity="0.3"/>
+  <path d="M400 330L410 390L400 450L390 390L400 330Z" fill="white" fill-opacity="0.3"/>
+  <path d="M330 400L390 390L450 400L390 410L330 400Z" fill="white" fill-opacity="0.3"/>
+  <line x1="400" y1="330" x2="400" y2="310" stroke="white" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="400" y1="450" x2="400" y2="470" stroke="white" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="330" y1="400" x2="310" y2="400" stroke="white" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="450" y1="400" x2="470" y2="400" stroke="white" stroke-opacity="0.3" stroke-width="2"/>
+  
+  <!-- Small Travel Elements -->
+  <rect x="150" y="450" width="30" height="20" rx="5" fill="white" fill-opacity="0.1"/>
+  <rect x="600" y="400" width="40" height="30" rx="5" fill="white" fill-opacity="0.1"/>
+  <rect x="620" y="440" width="20" height="15" rx="3" fill="white" fill-opacity="0.1"/>
+  <path d="M200 380C215 365 230 380 245 365" stroke="white" stroke-opacity="0.2" stroke-width="2"/>
+  <path d="M550 280C565 265 580 280 595 265" stroke="white" stroke-opacity="0.2" stroke-width="2"/>
+</svg> 

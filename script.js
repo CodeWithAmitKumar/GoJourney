@@ -168,4 +168,85 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Feedback Modal Functionality
+    const openFeedbackBtn = document.getElementById('open-feedback');
+    const feedbackModal = document.getElementById('feedback-modal');
+    const closeModal = document.querySelector('.close-modal');
+    
+    if (openFeedbackBtn && feedbackModal && closeModal) {
+        openFeedbackBtn.addEventListener('click', function() {
+            feedbackModal.style.display = 'flex';
+            setTimeout(() => {
+                feedbackModal.classList.add('show');
+            }, 10);
+        });
+        
+        closeModal.addEventListener('click', function() {
+            feedbackModal.classList.remove('show');
+            setTimeout(() => {
+                feedbackModal.style.display = 'none';
+            }, 300);
+        });
+        
+        // Close modal if clicked outside content
+        feedbackModal.addEventListener('click', function(e) {
+            if (e.target === feedbackModal) {
+                feedbackModal.classList.remove('show');
+                setTimeout(() => {
+                    feedbackModal.style.display = 'none';
+                }, 300);
+            }
+        });
+    }
+    
+    // Form submission with validation
+    const feedbackForm = document.getElementById('feedback-form');
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Basic validation
+            const nameInput = document.getElementById('contact-name');
+            const emailInput = document.getElementById('contact-email');
+            const messageInput = document.getElementById('contact-message');
+            
+            if (!nameInput.value.trim() || !emailInput.value.trim() || !messageInput.value.trim()) {
+                // Show error message
+                return;
+            }
+            
+            // Show success message or submit form
+            const toastContainer = document.getElementById('toast-container');
+            if (toastContainer) {
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.textContent = 'Thank you for your feedback!';
+                toastContainer.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 400);
+                }, 3000);
+            }
+            
+            // Close modal after submission
+            feedbackModal.classList.remove('show');
+            setTimeout(() => {
+                feedbackModal.style.display = 'none';
+                feedbackForm.reset(); // Reset form fields
+            }, 300);
+            
+            // Uncomment to actually submit the form
+            // this.submit();
+        });
+    }
 }); 
