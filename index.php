@@ -437,6 +437,7 @@
                     <label for="feedback-message">Your Message</label>
                     <textarea id="feedback-message" name="message" rows="5" required></textarea>
                 </div>
+                <input type="hidden" name="submission_date" value="<?php echo date('Y-m-d H:i:s'); ?>">
                 <button type="submit" class="submit-btn">Submit Feedback</button>
             </form>
         </div>

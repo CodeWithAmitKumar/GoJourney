@@ -1,67 +1,57 @@
 <?php
+// Start the session
 session_start();
 
-// Check if the form was submitted
+// Database connection settings
+$servername = "localhost";
+$username = "root"; // Default XAMPP username
+$password = ""; // Default XAMPP password
+$dbname = "go_journey"; // Your database name
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    $_SESSION['error'] = "Database connection failed: " . $conn->connect_error;
+    header("Location: index.php");
+    exit();
+}
+
+// Check if form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate form data
-    $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
-    $subject = trim($_POST['subject']);
-    $message = trim($_POST['message']);
+    // Collect form data
+    $name = $conn->real_escape_string($_POST['name']);
+    $email = $conn->real_escape_string($_POST['email']);
+    $subject = $conn->real_escape_string($_POST['subject']);
+    $message = $conn->real_escape_string($_POST['message']);
     
-    // Simple validation
-    if (empty($name) || empty($email) || empty($subject) || empty($message)) {
-        $_SESSION['error'] = "All fields are required";
-        header("Location: index.php#contact");
-        exit();
+    // Get submission date (from form or create now if not provided)
+    if (isset($_POST['submission_date']) && !empty($_POST['submission_date'])) {
+        $submission_date = $conn->real_escape_string($_POST['submission_date']);
+    } else {
+        $submission_date = date('Y-m-d H:i:s');
     }
     
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['error'] = "Invalid email format";
-        header("Location: index.php#contact");
-        exit();
+    // Prepare SQL statement to insert feedback
+    $sql = "INSERT INTO feedback (name, email, subject, message, submission_date) 
+            VALUES ('$name', '$email', '$subject', '$message', '$submission_date')";
+    
+    // Execute the query
+    if ($conn->query($sql) === TRUE) {
+        $_SESSION['success'] = "Thank you for your feedback! We will get back to you soon.";
+    } else {
+        $_SESSION['error'] = "Error: " . $sql . "<br>" . $conn->error;
     }
     
-    // Database connection (uncomment and configure when you have a database)
-    /*
-    $servername = "localhost";
-    $username = "your_username";
-    $password = "your_password";
-    $dbname = "gojourney";
+    // Close connection
+    $conn->close();
     
-    try {
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
-        // Prepare SQL statement
-        $stmt = $conn->prepare("INSERT INTO feedback (name, email, subject, message, created_at) 
-                                VALUES (:name, :email, :subject, :message, NOW())");
-        
-        // Bind parameters
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':subject', $subject);
-        $stmt->bindParam(':message', $message);
-        
-        // Execute query
-        $stmt->execute();
-        
-        $_SESSION['success'] = "Thank you for your feedback! We'll get back to you soon.";
-    } catch(PDOException $e) {
-        $_SESSION['error'] = "Error: " . $e->getMessage();
-    }
-    
-    $conn = null;
-    */
-    
-    // For now, just show a success message
-    $_SESSION['success'] = "Thank you for your feedback, $name! We'll get back to you soon.";
-    
-    // Redirect back to the contact section
-    header("Location: index.php#contact");
+    // Redirect back to homepage
+    header("Location: index.php");
     exit();
 } else {
-    // If someone tries to access this file directly
+    // If not a POST request, redirect to homepage
     header("Location: index.php");
     exit();
 }
