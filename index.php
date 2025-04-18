@@ -317,7 +317,8 @@
         </div>
     </section>
     
-    <section id="contact" class="contact-section">
+    <section id="contact" class="contact-section" style="background-image: url('images/background/contact.jpg'); background-position: center; background-size: cover; background-repeat: no-repeat; background-color: rgba(255, 255, 255, 0.9); background-blend-mode: overlay;">
+        <div class="gradient-overlay"></div>
         <div class="contact-content">
             <div class="contact-info">
                 <h2>Contact Us</h2>
