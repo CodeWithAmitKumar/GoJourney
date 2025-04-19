@@ -244,11 +244,18 @@ if (isset($_POST['confirm_delete'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - GoJourney</title>
-    <link rel="icon" type="image/png" href="../images/logo&svg/svg2.png">
+    <link rel="icon" type="image/png" href="../images/logo&svg/favicon.svg">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        body {
+            background-image: url('../images/background/dashboard.jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
+        }
         .settings-container {
             max-width: 800px;
             margin: 0 auto;
@@ -572,6 +579,9 @@ if (isset($_POST['confirm_delete'])) {
     </style>
 </head>
 <body>
+    <!-- Background overlay only -->
+    <div class="bg-overlay"></div>
+    
     <nav class="navbar">
         <a href="index.php" class="logo">GoJourney</a>
         <div class="nav-links">
