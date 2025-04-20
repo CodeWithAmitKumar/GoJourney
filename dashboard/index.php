@@ -50,6 +50,9 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
 
 // Update last activity time
 $_SESSION['last_activity'] = time();
+
+// Set the timezone to handle time correctly
+date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -98,7 +101,8 @@ $_SESSION['last_activity'] = time();
             <div class="dashboard-header">
                 <div class="welcome-message">
                     <?php 
-                        $hour = date('H');
+                        // Get the current hour in 24-hour format
+                        $hour = (int)date('H');
                         $greeting = '';
                         
                         if ($hour >= 5 && $hour < 12) {

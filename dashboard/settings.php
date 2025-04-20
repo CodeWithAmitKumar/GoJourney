@@ -78,15 +78,15 @@ if (mysqli_num_rows($settings_check) == 0) {
     $dark_mode = 0; // Default light mode
     
     mysqli_query($conn, "INSERT INTO user_settings (user_id, email_notifications, dark_mode, language, currency, date_format) 
-                         VALUES ($user_id, 1, $dark_mode, 'english', 'USD', 'MM/DD/YYYY')");
+                         VALUES ($user_id, 1, $dark_mode, 'english', 'INR', 'DD/MM/YYYY')");
     
     $settings_check = mysqli_query($conn, "SELECT * FROM user_settings WHERE user_id = $user_id");
 }
 
 $settings = mysqli_fetch_assoc($settings_check);
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle form submission for settings update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['delete_account'])) {
     // Process email notifications toggle
     $email_notifications = isset($_POST['email_notifications']) ? 1 : 0;
     
@@ -122,120 +122,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Process password change
-if (isset($_POST['change_password'])) {
-    $current_password = $_POST['current_password'];
-    $new_password = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
-    
-    // Validate passwords
-    if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
-        $_SESSION['error'] = "All password fields are required";
-    } else if ($new_password !== $confirm_password) {
-        $_SESSION['error'] = "New passwords do not match";
-    } else if (strlen($new_password) < 6) {
-        $_SESSION['error'] = "Password must be at least 6 characters long";
-    } else {
-        // Verify current password
-        $user_query = mysqli_query($conn, "SELECT password_hash FROM users WHERE user_id = $user_id");
+// Handle account deletion
+if (isset($_POST['delete_account'])) {
+    // Verify the DELETE confirmation text
+    if (isset($_POST['confirm_delete_text']) && $_POST['confirm_delete_text'] === 'DELETE') {
+        // For debugging
+        error_log("Account deletion initiated for user ID: $user_id");
         
-        if (!$user_query) {
-            $_SESSION['error'] = "Database error: " . mysqli_error($conn);
-            header("Location: settings.php");
-            exit();
+        // Check if there are any other tables with foreign key relationships
+        $tables_to_check = ['user_settings']; // Add any other tables with foreign keys to user
+        $deletion_errors = false;
+        
+        // First delete from tables with foreign key constraints
+        foreach ($tables_to_check as $table) {
+            $delete_query = "DELETE FROM $table WHERE user_id = $user_id";
+            if (!mysqli_query($conn, $delete_query)) {
+                $deletion_errors = true;
+                error_log("Error deleting from $table: " . mysqli_error($conn));
+            }
         }
         
-        $user = mysqli_fetch_assoc($user_query);
-        
-        if (password_verify($current_password, $user['password_hash'])) {
-            // Hash new password
-            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-            
-            error_log("Changing password for user ID: $user_id");
-            
-            // Update password with more detailed error reporting
-            $update_sql = "UPDATE users SET password_hash = '$hashed_password' WHERE user_id = $user_id";
-            $update_result = mysqli_query($conn, $update_sql);
-            
-            if ($update_result) {
-                // Check if any rows were actually affected
-                if (mysqli_affected_rows($conn) > 0) {
-                    error_log("Password updated in database successfully");
-                    
-                    // Force expire the current session cookie
-                    if (isset($_COOKIE[session_name()])) {
-                        setcookie(session_name(), '', time() - 42000, '/');
-                    }
-                    
-                    // Clear all session data
-                    $_SESSION = array();
-                    
-                    // Destroy the session
-                    session_destroy();
-                    error_log("Session destroyed after password change");
-                    
-                    // Start new session for message
-                    session_start();
-                    session_regenerate_id(true);
-                    error_log("New session started for success message");
-                    
-                    $_SESSION['success'] = "Password changed successfully! Please login with your new password.";
-                    error_log("Redirecting to login page");
-                    
-                    // Redirect to login page
-                    header("Location: ../index.php");
-                    exit();
-                } else {
-                    // The query ran but no rows were updated
-                    error_log("Query executed but no rows updated. Password might be the same.");
-                    $_SESSION['success'] = "Query executed but no rows updated. Your password might already be set to this value.";
-                    header("Location: settings.php");
-                    exit();
-                }
-            } else {
-                error_log("Error updating password: " . mysqli_error($conn));
-                $_SESSION['error'] = "Error updating password: " . mysqli_error($conn) . " (SQL: $update_sql)";
-                header("Location: settings.php");
+        if (!$deletion_errors) {
+            // Now delete the user record
+            $delete_user = "DELETE FROM users WHERE user_id = $user_id";
+            if (mysqli_query($conn, $delete_user)) {
+                // Successfully deleted
+                error_log("User ID: $user_id successfully deleted");
+                
+                // Clear the session
+                session_unset();
+                session_destroy();
+                
+                // Create new session for success message
+                session_start();
+                $_SESSION['success'] = "Your account has been deleted successfully.";
+                header("Location: ../index.php");
                 exit();
+            } else {
+                error_log("Error deleting user: " . mysqli_error($conn));
+                $_SESSION['error'] = "Error deleting your account: " . mysqli_error($conn);
             }
         } else {
-            error_log("Current password verification failed");
-            $_SESSION['error'] = "Current password is incorrect";
+            $_SESSION['error'] = "Could not delete account due to database constraints. Please contact support.";
         }
-    }
-}
-
-// Delete account request
-if (isset($_POST['delete_account'])) {
-    // Set up a confirmation page or modal instead of immediately deleting
-    $_SESSION['confirm_delete'] = true;
-}
-
-// Confirm account deletion
-if (isset($_POST['confirm_delete'])) {
-    $password = $_POST['confirm_password'];
-    
-    // Verify password
-    $user_query = mysqli_query($conn, "SELECT password_hash FROM users WHERE user_id = $user_id");
-    $user = mysqli_fetch_assoc($user_query);
-    
-    if (password_verify($password, $user['password_hash'])) {
-        // Delete user data
-        mysqli_query($conn, "DELETE FROM user_settings WHERE user_id = $user_id");
-        mysqli_query($conn, "DELETE FROM users WHERE user_id = $user_id");
-        
-        // Log out user
-        session_destroy();
-        
-        // Start new session for message
-        session_start();
-        $_SESSION['success'] = "Your account has been deleted successfully.";
-        header("Location: ../index.php");
-        exit();
     } else {
-        $_SESSION['error'] = "Password is incorrect. Account not deleted.";
-        $_SESSION['confirm_delete'] = false;
+        $_SESSION['error'] = "You must type DELETE (in all caps) to confirm account deletion.";
     }
+    
+    // If we reach here, there was an error - redirect back to settings
+    header("Location: settings.php");
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -248,6 +184,45 @@ if (isset($_POST['confirm_delete'])) {
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .delete-account-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+        
+        .delete-account-section h4 {
+            color: #d9534f;
+            margin-bottom: 10px;
+        }
+        
+        .delete-account-section p {
+            color: #d9534f;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .delete-account-btn {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .delete-account-btn:hover {
+            background-color: #c9302c;
+        }
+        
+        .delete-confirmation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
     <!-- Background overlay -->
@@ -345,6 +320,7 @@ if (isset($_POST['confirm_delete'])) {
                         <div class="form-group">
                             <label for="currency">Currency</label>
                             <select id="currency" name="currency" class="form-control">
+                                <option value="INR" <?php echo $settings['currency'] == 'INR' ? 'selected' : ''; ?>>Indian Rupee (₹)</option>
                                 <option value="USD" <?php echo $settings['currency'] == 'USD' ? 'selected' : ''; ?>>US Dollar ($)</option>
                                 <option value="EUR" <?php echo $settings['currency'] == 'EUR' ? 'selected' : ''; ?>>Euro (€)</option>
                                 <option value="GBP" <?php echo $settings['currency'] == 'GBP' ? 'selected' : ''; ?>>British Pound (£)</option>
@@ -367,31 +343,31 @@ if (isset($_POST['confirm_delete'])) {
                     </form>
                 </div>
                 
-                <!-- Security Settings Card -->
+                <!-- Account Management Card -->
                 <div class="settings-card">
-                    <h3><i class="fas fa-lock"></i> Security</h3>
+                    <h3><i class="fas fa-user-cog"></i> Account Management</h3>
                     
-                    <form action="settings.php" method="POST">
-                        <input type="hidden" name="change_password" value="1">
+                    <!-- Delete Account Section -->
+                    <div class="delete-account-section">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Delete Account</h4>
+                        <p class="delete-warning">Warning: This action cannot be undone. All your data will be permanently deleted.</p>
                         
-                        <div class="form-group">
-                            <label for="current_password">Current Password</label>
-                            <input type="password" id="current_password" name="current_password" class="form-control" required>
+                        <button type="button" id="show-delete-confirmation" class="delete-account-btn">Delete My Account</button>
+                        
+                        <div id="delete-confirmation" class="delete-confirmation" style="display: none;">
+                            <form action="settings.php" method="POST">
+                                <p><strong>Are you absolutely sure you want to delete your account?</strong></p>
+                                <p>Please type DELETE in the field below to confirm:</p>
+                                
+                                <div class="form-group">
+                                    <input type="text" name="confirm_delete_text" class="form-control" placeholder="Type DELETE here" required>
+                                </div>
+                                
+                                <input type="hidden" name="delete_account" value="1">
+                                <button type="submit" class="delete-account-btn">Confirm Delete Account</button>
+                            </form>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="new_password">New Password</label>
-                            <input type="password" id="new_password" name="new_password" class="form-control" required minlength="6">
-                            <small>Password must be at least 6 characters long</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="confirm_password">Confirm New Password</label>
-                            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required minlength="6">
-                        </div>
-                        
-                        <button type="submit" class="change-password-btn"><i class="fas fa-key"></i> Change Password</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -399,5 +375,60 @@ if (isset($_POST['confirm_delete'])) {
     
     <script src="../script.js"></script>
     <script src="dashboard.js"></script>
+    <script>
+        // Toggle delete confirmation form
+        document.getElementById('show-delete-confirmation').addEventListener('click', function() {
+            document.getElementById('delete-confirmation').style.display = 'block';
+            this.style.display = 'none';
+        });
+        
+        // Handle dark mode toggle checkbox
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeCheckbox = document.getElementById('dark_mode');
+            
+            // Apply dark mode if checkbox is checked on page load
+            if (darkModeCheckbox.checked) {
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+                
+                // Update the theme toggle button icons
+                const moonIcon = document.querySelector('.fa-moon');
+                const sunIcon = document.querySelector('.fa-sun');
+                if (moonIcon && sunIcon) {
+                    moonIcon.style.display = 'none';
+                    sunIcon.style.display = 'block';
+                }
+            }
+            
+            // Toggle dark mode when checkbox is clicked
+            darkModeCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Enable dark mode
+                    document.body.classList.add('dark-theme');
+                    localStorage.setItem('theme', 'dark');
+                    
+                    // Update theme toggle button icons
+                    const moonIcon = document.querySelector('.fa-moon');
+                    const sunIcon = document.querySelector('.fa-sun');
+                    if (moonIcon && sunIcon) {
+                        moonIcon.style.display = 'none';
+                        sunIcon.style.display = 'block';
+                    }
+                } else {
+                    // Disable dark mode
+                    document.body.classList.remove('dark-theme');
+                    localStorage.setItem('theme', 'light');
+                    
+                    // Update theme toggle button icons
+                    const moonIcon = document.querySelector('.fa-moon');
+                    const sunIcon = document.querySelector('.fa-sun');
+                    if (moonIcon && sunIcon) {
+                        moonIcon.style.display = 'block';
+                        sunIcon.style.display = 'none';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html> 
