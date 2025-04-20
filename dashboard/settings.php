@@ -243,614 +243,161 @@ if (isset($_POST['confirm_delete'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - GoJourney</title>
+    <title>Account Settings - GoJourney</title>
     <link rel="icon" type="image/png" href="../images/logo&svg/favicon.svg">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            background-image: url('../images/background/dashboard.jpg') !important;
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            background-attachment: fixed !important;
-        }
-        .settings-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .settings-header {
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .settings-header h1 {
-            font-size: 2.2rem;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .settings-header p {
-            color: #666;
-        }
-        
-        .settings-section {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-        
-        .settings-section h2 {
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .settings-section h2 i {
-            color: #007bff;
-        }
-        
-        .form-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #f5f5f5;
-        }
-        
-        .form-row:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        
-        .setting-label {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .setting-label strong {
-            margin-bottom: 5px;
-            color: #444;
-        }
-        
-        .setting-label span {
-            color: #777;
-            font-size: 0.9rem;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 30px;
-        }
-        
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .toggle-slider {
-            background-color: #007bff;
-        }
-        
-        input:checked + .toggle-slider:before {
-            transform: translateX(30px);
-        }
-        
-        .select-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .select-wrapper select {
-            appearance: none;
-            padding: 10px 35px 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            font-size: 1rem;
-            cursor: pointer;
-            min-width: 180px;
-        }
-        
-        .select-wrapper::after {
-            content: '\f107';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            color: #777;
-            pointer-events: none;
-        }
-        
-        .danger-zone {
-            background-color: #fff8f8;
-            border-left: 4px solid #dc3545;
-        }
-        
-        .danger-zone h2 {
-            color: #dc3545;
-        }
-        
-        .danger-zone h2 i {
-            color: #dc3545;
-        }
-        
-        .danger-zone .form-row {
-            border-color: #ffe0e0;
-        }
-        
-        .danger-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .danger-btn:hover {
-            background-color: #c82333;
-            transform: translateY(-2px);
-        }
-        
-        .password-form {
-            margin-top: 20px;
-        }
-        
-        .password-form .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .password-form label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        
-        .password-form input {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        
-        .password-form button {
-            padding: 10px 20px;
-            background: linear-gradient(90deg, #007bff, #00c6ff);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        
-        .confirm-delete {
-            background-color: #fff0f0;
-            padding: 20px;
-            border-radius: 5px;
-            margin-top: 20px;
-            border: 1px solid #ffcccc;
-        }
-        
-        .confirm-delete h3 {
-            color: #dc3545;
-            margin-bottom: 15px;
-        }
-        
-        .confirm-delete p {
-            margin-bottom: 15px;
-            color: #555;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .cancel-btn {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .submit-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: linear-gradient(90deg, #007bff, #00c6ff);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            margin-top: 10px;
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-        }
-        
-        /* Dark theme adjustments */
-        body.dark-theme .settings-section {
-            background-color: #2a2a2a;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        body.dark-theme .settings-header h1,
-        body.dark-theme .settings-section h2 {
-            color: #f5f5f5;
-        }
-        
-        body.dark-theme .settings-header p,
-        body.dark-theme .setting-label span {
-            color: #aaa;
-        }
-        
-        body.dark-theme .setting-label strong {
-            color: #ddd;
-        }
-        
-        body.dark-theme .settings-section h2,
-        body.dark-theme .form-row {
-            border-color: #444;
-        }
-        
-        body.dark-theme .select-wrapper select {
-            background-color: #333;
-            border-color: #555;
-            color: #f5f5f5;
-        }
-        
-        body.dark-theme .danger-zone {
-            background-color: #3a2a2a;
-        }
-        
-        body.dark-theme .danger-zone .form-row {
-            border-color: #553333;
-        }
-        
-        body.dark-theme .confirm-delete {
-            background-color: #3a2a2a;
-            border-color: #663333;
-        }
-        
-        body.dark-theme .confirm-delete p {
-            color: #ddd;
-        }
-        
-        body.dark-theme .password-form label {
-            color: #ddd;
-        }
-        
-        body.dark-theme .password-form input {
-            background-color: #333;
-            border-color: #555;
-            color: #f5f5f5;
-        }
-    </style>
 </head>
 <body>
-    <!-- Background overlay only -->
+    <!-- Background overlay -->
     <div class="bg-overlay"></div>
     
-    <nav class="navbar">
-        <a href="index.php" class="logo">GoJourney</a>
-        <div class="nav-links">
-            <a href="index.php" title="Home"><i class="fas fa-home"></i></a>
-            <a href="#" title="Wishlist"><i class="fas fa-heart"></i></a>
-            <a href="#" title="Cart"><i class="fas fa-shopping-cart"></i></a>
-            <button id="theme-toggle" title="Toggle Theme" class="theme-toggle-btn">
-                <i class="fas fa-moon"></i>
-                <i class="fas fa-sun" style="display: none;"></i>
-            </button>
-            <div class="profile-dropdown">
-                <a href="#" class="profile-icon" title="Profile">
-                    <i class="fas fa-user-circle"></i>
-                </a>
-                <div class="dropdown-content">
-                    <a href="profile.php">My Profile</a>
-                    <a href="settings.php">Settings</a>
-                    <a href="../auth/logout.php">Logout</a>
+    <!-- Fixed header -->
+    <div class="header-wrapper">
+        <nav class="navbar">
+            <a href="index.php" class="logo">GoJourney</a>
+            <div class="nav-links">
+                <a href="index.php" title="Home"><i class="fas fa-home"></i></a>
+                <a href="#" title="Wishlist"><i class="fas fa-heart"></i></a>
+                <a href="#" title="Cart"><i class="fas fa-shopping-cart"></i></a>
+                <button id="theme-toggle" title="Toggle Theme" class="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun" style="display: none;"></i>
+                </button>
+                <div class="profile-dropdown">
+                    <a href="#" class="profile-icon" title="Profile">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="profile.php">My Profile</a>
+                        <a href="settings.php">Settings</a>
+                        <a href="../auth/logout.php">Logout</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </div>
     
-    <div class="dashboard-container">
-        <div class="settings-container">
-            <div class="settings-header">
-                <h1><i class="fas fa-cog"></i> Settings</h1>
-                <p>Customize your GoJourney experience</p>
+    <!-- Main content -->
+    <div class="main-content">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <div class="welcome-message">
+                    <span>Account Settings</span>
+                    <div class="welcome-subtitle">Manage your account preferences and security settings</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search destinations...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
             </div>
             
-            <?php if (isset($_SESSION['success'])): ?>
-                <div class="alert alert-success">
-                    <?php 
-                        echo $_SESSION['success']; 
-                        unset($_SESSION['success']);
-                    ?>
-                </div>
-            <?php endif; ?>
-            
-            <?php if (isset($_SESSION['error'])): ?>
-                <div class="alert alert-error">
-                    <?php 
-                        echo $_SESSION['error']; 
-                        unset($_SESSION['error']);
-                    ?>
-                </div>
-            <?php endif; ?>
-            
-            <form method="post" action="settings.php">
-                <!-- Preferences Section -->
-                <div class="settings-section">
-                    <h2><i class="fas fa-sliders-h"></i> Preferences</h2>
-                    
-                    <div class="form-row">
-                        <div class="setting-label">
-                            <strong>Email Notifications</strong>
-                            <span>Receive emails about deals, trip updates, and account activity</span>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" name="email_notifications" <?php echo $settings['email_notifications'] ? 'checked' : ''; ?>>
-                            <span class="toggle-slider"></span>
-                        </label>
+            <div class="dashboard-content">
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success">
+                        <?php 
+                            echo $_SESSION['success']; 
+                            unset($_SESSION['success']);
+                        ?>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="setting-label">
-                            <strong>Dark Mode</strong>
-                            <span>Toggle between light and dark themes</span>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" name="dark_mode" id="dark_mode_toggle" <?php echo $settings['dark_mode'] ? 'checked' : ''; ?>>
-                            <span class="toggle-slider"></span>
-                        </label>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-error">
+                        <?php 
+                            echo $_SESSION['error']; 
+                            unset($_SESSION['error']);
+                        ?>
                     </div>
+                <?php endif; ?>
+                
+                <!-- Preferences Settings Card -->
+                <div class="settings-card">
+                    <h3><i class="fas fa-cog"></i> Preferences</h3>
                     
-                    <div class="form-row">
-                        <div class="setting-label">
-                            <strong>Language</strong>
-                            <span>Select your preferred language</span>
+                    <form action="settings.php" method="POST">
+                        <!-- Email Notifications -->
+                        <div class="form-check">
+                            <input type="checkbox" id="email_notifications" name="email_notifications" <?php echo $settings['email_notifications'] ? 'checked' : ''; ?>>
+                            <label for="email_notifications">Receive email notifications</label>
                         </div>
-                        <div class="select-wrapper">
-                            <select name="language">
+                        
+                        <!-- Dark Mode -->
+                        <div class="form-check">
+                            <input type="checkbox" id="dark_mode" name="dark_mode" <?php echo $settings['dark_mode'] ? 'checked' : ''; ?>>
+                            <label for="dark_mode">Enable dark mode</label>
+                        </div>
+                        
+                        <!-- Language -->
+                        <div class="form-group">
+                            <label for="language">Language</label>
+                            <select id="language" name="language" class="form-control">
                                 <option value="english" <?php echo $settings['language'] == 'english' ? 'selected' : ''; ?>>English</option>
                                 <option value="spanish" <?php echo $settings['language'] == 'spanish' ? 'selected' : ''; ?>>Spanish</option>
                                 <option value="french" <?php echo $settings['language'] == 'french' ? 'selected' : ''; ?>>French</option>
                                 <option value="german" <?php echo $settings['language'] == 'german' ? 'selected' : ''; ?>>German</option>
-                                <option value="japanese" <?php echo $settings['language'] == 'japanese' ? 'selected' : ''; ?>>Japanese</option>
+                                <option value="italian" <?php echo $settings['language'] == 'italian' ? 'selected' : ''; ?>>Italian</option>
                             </select>
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="setting-label">
-                            <strong>Currency</strong>
-                            <span>Set your preferred currency for prices</span>
-                        </div>
-                        <div class="select-wrapper">
-                            <select name="currency">
-                                <option value="USD" <?php echo $settings['currency'] == 'USD' ? 'selected' : ''; ?>>USD ($)</option>
-                                <option value="EUR" <?php echo $settings['currency'] == 'EUR' ? 'selected' : ''; ?>>EUR (€)</option>
-                                <option value="GBP" <?php echo $settings['currency'] == 'GBP' ? 'selected' : ''; ?>>GBP (£)</option>
-                                <option value="INR" <?php echo $settings['currency'] == 'INR' ? 'selected' : ''; ?>>INR (₹)</option>
-                                <option value="JPY" <?php echo $settings['currency'] == 'JPY' ? 'selected' : ''; ?>>JPY (¥)</option>
+                        
+                        <!-- Currency -->
+                        <div class="form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency" name="currency" class="form-control">
+                                <option value="USD" <?php echo $settings['currency'] == 'USD' ? 'selected' : ''; ?>>US Dollar ($)</option>
+                                <option value="EUR" <?php echo $settings['currency'] == 'EUR' ? 'selected' : ''; ?>>Euro (€)</option>
+                                <option value="GBP" <?php echo $settings['currency'] == 'GBP' ? 'selected' : ''; ?>>British Pound (£)</option>
+                                <option value="JPY" <?php echo $settings['currency'] == 'JPY' ? 'selected' : ''; ?>>Japanese Yen (¥)</option>
+                                <option value="AUD" <?php echo $settings['currency'] == 'AUD' ? 'selected' : ''; ?>>Australian Dollar (A$)</option>
                             </select>
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="setting-label">
-                            <strong>Date Format</strong>
-                            <span>Choose how dates are displayed</span>
-                        </div>
-                        <div class="select-wrapper">
-                            <select name="date_format">
+                        
+                        <!-- Date Format -->
+                        <div class="form-group">
+                            <label for="date_format">Date Format</label>
+                            <select id="date_format" name="date_format" class="form-control">
                                 <option value="MM/DD/YYYY" <?php echo $settings['date_format'] == 'MM/DD/YYYY' ? 'selected' : ''; ?>>MM/DD/YYYY</option>
                                 <option value="DD/MM/YYYY" <?php echo $settings['date_format'] == 'DD/MM/YYYY' ? 'selected' : ''; ?>>DD/MM/YYYY</option>
                                 <option value="YYYY-MM-DD" <?php echo $settings['date_format'] == 'YYYY-MM-DD' ? 'selected' : ''; ?>>YYYY-MM-DD</option>
                             </select>
                         </div>
-                    </div>
+                        
+                        <button type="submit" class="save-settings-btn"><i class="fas fa-save"></i> Save Preferences</button>
+                    </form>
+                </div>
+                
+                <!-- Security Settings Card -->
+                <div class="settings-card">
+                    <h3><i class="fas fa-lock"></i> Security</h3>
                     
-                    <button type="submit" class="submit-btn">Save Preferences</button>
-                </div>
-            </form>
-            
-            <!-- Security Section -->
-            <div class="settings-section">
-                <h2><i class="fas fa-shield-alt"></i> Security</h2>
-                
-                <div class="form-row">
-                    <div class="setting-label">
-                        <strong>Change Password</strong>
-                        <span>Update your password to keep your account secure</span>
-                    </div>
-                    <button type="button" id="show-password-form" class="submit-btn">Change Password</button>
-                </div>
-                
-                <div id="password-form" class="password-form" style="display: none;">
-                    <form method="post" action="settings.php">
+                    <form action="settings.php" method="POST">
+                        <input type="hidden" name="change_password" value="1">
+                        
                         <div class="form-group">
-                            <label for="current-password">Current Password</label>
-                            <input type="password" id="current-password" name="current_password" required>
+                            <label for="current_password">Current Password</label>
+                            <input type="password" id="current_password" name="current_password" class="form-control" required>
                         </div>
+                        
                         <div class="form-group">
-                            <label for="new-password">New Password</label>
-                            <input type="password" id="new-password" name="new_password" required>
+                            <label for="new_password">New Password</label>
+                            <input type="password" id="new_password" name="new_password" class="form-control" required minlength="6">
+                            <small>Password must be at least 6 characters long</small>
                         </div>
+                        
                         <div class="form-group">
-                            <label for="confirm-password">Confirm New Password</label>
-                            <input type="password" id="confirm-password" name="confirm_password" required>
+                            <label for="confirm_password">Confirm New Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required minlength="6">
                         </div>
-                        <button type="submit" name="change_password" class="submit-btn">Update Password</button>
+                        
+                        <button type="submit" class="change-password-btn"><i class="fas fa-key"></i> Change Password</button>
                     </form>
                 </div>
-            </div>
-            
-            <!-- Danger Zone Section -->
-            <div class="settings-section danger-zone">
-                <h2><i class="fas fa-exclamation-triangle"></i> Danger Zone</h2>
-                
-                <div class="form-row">
-                    <div class="setting-label">
-                        <strong>Delete Account</strong>
-                        <span>Permanently delete your account and all associated data</span>
-                    </div>
-                    <form method="post" action="settings.php">
-                        <button type="submit" name="delete_account" class="danger-btn">Delete Account</button>
-                    </form>
-                </div>
-                
-                <?php if (isset($_SESSION['confirm_delete']) && $_SESSION['confirm_delete']): ?>
-                    <div class="confirm-delete">
-                        <h3>Are you sure?</h3>
-                        <p>This action cannot be undone. All your data, including your profile, settings, and travel history will be permanently deleted.</p>
-                        <form method="post" action="settings.php">
-                            <div class="form-group">
-                                <label for="confirm-password-delete">Enter your password to confirm:</label>
-                                <input type="password" id="confirm-password-delete" name="confirm_password" required>
-                            </div>
-                            <div class="btn-group">
-                                <button type="submit" name="cancel_delete" class="cancel-btn">Cancel</button>
-                                <button type="submit" name="confirm_delete" class="danger-btn">Yes, Delete My Account</button>
-                            </div>
-                        </form>
-                    </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
     
     <script src="../script.js"></script>
     <script src="dashboard.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Password form toggle
-            const showPasswordFormBtn = document.getElementById('show-password-form');
-            const passwordForm = document.getElementById('password-form');
-            
-            if (showPasswordFormBtn && passwordForm) {
-                showPasswordFormBtn.addEventListener('click', function() {
-                    if (passwordForm.style.display === 'none') {
-                        passwordForm.style.display = 'block';
-                        showPasswordFormBtn.textContent = 'Hide Form';
-                    } else {
-                        passwordForm.style.display = 'none';
-                        showPasswordFormBtn.textContent = 'Change Password';
-                    }
-                });
-            }
-            
-            // Dark mode toggle that also updates localStorage
-            const darkModeToggle = document.getElementById('dark_mode_toggle');
-            if (darkModeToggle) {
-                darkModeToggle.addEventListener('change', function() {
-                    // This will be saved in the database when the form is submitted
-                    // But we also need to update localStorage for the immediate visual effect
-                    if (this.checked) {
-                        document.body.classList.add('dark-theme');
-                        localStorage.setItem('theme', 'dark');
-                        
-                        // Update theme toggle icons
-                        const moonIcon = document.querySelector('.fa-moon');
-                        const sunIcon = document.querySelector('.fa-sun');
-                        if (moonIcon && sunIcon) {
-                            moonIcon.style.display = 'none';
-                            sunIcon.style.display = 'block';
-                        }
-                    } else {
-                        document.body.classList.remove('dark-theme');
-                        localStorage.setItem('theme', 'light');
-                        
-                        // Update theme toggle icons
-                        const moonIcon = document.querySelector('.fa-moon');
-                        const sunIcon = document.querySelector('.fa-sun');
-                        if (moonIcon && sunIcon) {
-                            moonIcon.style.display = 'block';
-                            sunIcon.style.display = 'none';
-                        }
-                    }
-                });
-            }
-            
-            // Cancel delete account
-            const cancelDeleteBtn = document.querySelector('button[name="cancel_delete"]');
-            if (cancelDeleteBtn) {
-                cancelDeleteBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.querySelector('.confirm-delete').style.display = 'none';
-                    <?php $_SESSION['confirm_delete'] = false; ?>
-                });
-            }
-            
-            // Auto-dismiss notifications after 3 seconds
-            const alerts = document.querySelectorAll('.alert');
-            if (alerts.length > 0) {
-                alerts.forEach(alert => {
-                    setTimeout(() => {
-                        // Add fade-out animation
-                        alert.style.transition = 'opacity 0.5s ease';
-                        alert.style.opacity = '0';
-                        
-                        // Remove the element after animation completes
-                        setTimeout(() => {
-                            alert.remove();
-                        }, 500);
-                    }, 3000); // Wait 3 seconds before starting to fade out
-                });
-            }
-        });
-    </script>
 </body>
 </html> 

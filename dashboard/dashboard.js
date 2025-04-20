@@ -3,46 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
     const moonIcon = themeToggle.querySelector('.fa-moon');
     const sunIcon = themeToggle.querySelector('.fa-sun');
-    const welcomeMessage = document.querySelector('.welcome-message');
     
-    // Store the original welcome message text
-    const originalWelcomeText = welcomeMessage ? welcomeMessage.innerHTML : '';
-    
-    // Function to ensure welcome message is visible and preserved
-    function preserveWelcomeMessage() {
-        if (welcomeMessage) {
-            welcomeMessage.style.display = 'block';
-            welcomeMessage.style.visibility = 'visible';
-            welcomeMessage.style.opacity = '1';
-            
-            // Apply gradient text in dark mode or regular color in light mode
-            if (document.body.classList.contains('dark-theme')) {
-                // CSS will handle gradient styling through the class
-                welcomeMessage.style.color = ''; // Remove inline color to let CSS handle it
-            } else {
-                // Reset to black for light mode
-                welcomeMessage.style.background = '';
-                welcomeMessage.style.webkitBackgroundClip = '';
-                welcomeMessage.style.webkitTextFillColor = '';
-                welcomeMessage.style.backgroundClip = '';
-                welcomeMessage.style.textFillColor = '';
-                welcomeMessage.style.color = '#333';
-            }
-            
-            // Ensure the content hasn't been lost
-            if (welcomeMessage.innerHTML.trim() === '') {
-                welcomeMessage.innerHTML = originalWelcomeText;
-            }
-        }
-    }
-    
-    // Check for saved theme preference
+    // Check for saved theme preference and apply it
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
         moonIcon.style.display = 'none';
         sunIcon.style.display = 'block';
-        preserveWelcomeMessage();
     }
     
     // Toggle theme on button click
@@ -59,9 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
             sunIcon.style.display = 'none';
             localStorage.setItem('theme', 'light');
         }
-        
-        // Always preserve welcome message
-        preserveWelcomeMessage();
     });
 
     // Search functionality
@@ -82,17 +46,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to perform search (placeholder for now)
+    // Function to perform search
     function performSearch() {
         const searchTerm = searchInput.value.trim();
         if (searchTerm) {
             console.log('Searching for:', searchTerm);
-            // Here you would implement the actual search functionality
-            // For example: window.location.href = 'search-results.php?q=' + encodeURIComponent(searchTerm);
+            // Implement the actual search functionality
+            // window.location.href = 'search-results.php?q=' + encodeURIComponent(searchTerm);
+            alert('Search functionality will be implemented soon!');
         }
     }
     
-    // Auto-dismiss notifications after 3 seconds
+    // Auto-dismiss notifications after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     if (alerts.length > 0) {
         alerts.forEach(alert => {
@@ -105,7 +70,125 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     alert.remove();
                 }, 500);
-            }, 3000); // Wait 3 seconds before starting to fade out
+            }, 5000); // Wait 5 seconds before starting to fade out
         });
     }
+    
+    // Enable form validation for any forms on the page
+    const forms = document.querySelectorAll('form');
+    if (forms.length > 0) {
+        forms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    // Find all invalid inputs and add visual cues
+                    const invalidInputs = form.querySelectorAll(':invalid');
+                    invalidInputs.forEach(input => {
+                        input.classList.add('is-invalid');
+                        
+                        // Add an error message if not already present
+                        const parent = input.parentElement;
+                        if (!parent.querySelector('.error-message')) {
+                            const errorMsg = document.createElement('div');
+                            errorMsg.className = 'error-message';
+                            errorMsg.style.color = '#dc3545';
+                            errorMsg.style.fontSize = '0.875rem';
+                            errorMsg.style.marginTop = '5px';
+                            errorMsg.textContent = input.validationMessage;
+                            parent.appendChild(errorMsg);
+                        }
+                    });
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+            
+            // Remove error styling when input changes
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.checkValidity()) {
+                        this.classList.remove('is-invalid');
+                        
+                        // Find the closest form-group parent
+                        const parent = this.closest('.form-group');
+                        if (parent) {
+                            const errorMsg = parent.querySelector('.error-message');
+                            if (errorMsg) {
+                                errorMsg.remove();
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    }
+    
+    // Add tooltips to disabled fields to provide additional information
+    const disabledInputs = document.querySelectorAll('input:disabled, select:disabled, textarea:disabled');
+    disabledInputs.forEach(input => {
+        input.title = input.title || "This field cannot be edited";
+        
+        // Add hover effect to show it's disabled but interactive for tooltips
+        input.addEventListener('mouseover', function() {
+            this.style.cursor = 'not-allowed';
+        });
+    });
+    
+    // Handle readonly fields with better tooltips
+    const readonlyInputs = document.querySelectorAll('input[readonly], textarea[readonly]');
+    readonlyInputs.forEach(input => {
+        // Add a descriptive title if not already specified
+        if (!input.title) {
+            if (input.id === 'email_display' || input.id === 'email') {
+                input.title = "Email address cannot be changed here. Contact support for assistance.";
+            } else {
+                input.title = "This field is read-only";
+            }
+        }
+        
+        // Prevent user from selecting text in readonly fields for better UX
+        input.addEventListener('focus', function(e) {
+            // Allow text selection in textarea elements
+            if (this.tagName.toLowerCase() !== 'textarea') {
+                // Move cursor to end and prevent text selection
+                const val = this.value;
+                this.value = '';
+                this.value = val;
+            }
+        });
+    });
+    
+    // Handle mobile menu toggle if present
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (mobileMenuToggle && navLinks) {
+        mobileMenuToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
+        });
+    }
+    
+    // Apply form field animations
+    const formControls = document.querySelectorAll('.form-control');
+    formControls.forEach(input => {
+        // Add focus style
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        // Remove focus style
+        input.addEventListener('blur', function() {
+            if (this.value.length === 0) {
+                this.parentElement.classList.remove('focused');
+            }
+        });
+        
+        // Check on load if the field has a value
+        if (input.value.length > 0) {
+            input.parentElement.classList.add('focused');
+        }
+    });
 }); 

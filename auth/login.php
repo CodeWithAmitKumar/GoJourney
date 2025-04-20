@@ -65,8 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Set last login time
             $_SESSION['last_activity'] = time();
             
-            // Update last login time in database if you have such a field
-            // mysqli_query($conn, "UPDATE users SET last_login = NOW() WHERE user_id = ".$row['user_id']);
+            // Update last login time in database
+            mysqli_query($conn, "UPDATE users SET last_login = NOW() WHERE user_id = ".$row['user_id']);
             
             // Set success message
             $_SESSION['success'] = "Login successful! Welcome back, " . $row['full_name'] . "!";
