@@ -259,7 +259,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="profile-form-card">
                     <h3><i class="fas fa-info-circle"></i> Account Information</h3>
-                    <p><strong>User ID:</strong> <?php echo isset($user['user_id']) ? htmlspecialchars($user['user_id']) : 'N/A'; ?></p>
+                  
                     
                     <p><strong>Account Created:</strong> 
                     <?php 
