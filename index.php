@@ -70,10 +70,6 @@
                             <span class="star">★</span>
                             <span>5.0</span>
                         </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">Rs.1100.00</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -89,10 +85,6 @@
                         <div class="destination-rating">
                             <span class="star">★</span>
                             <span>4.8</span>
-                        </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">Rs.799.00</span>
                         </div>
                     </div>
                 </div>
@@ -110,10 +102,6 @@
                             <span class="star">★</span>
                             <span>4.7</span>
                         </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">Rs.1,099.00</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -129,10 +117,6 @@
                         <div class="destination-rating">
                             <span class="star">★</span>
                             <span>4.5</span>
-                        </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">Rs.1245.00</span>
                         </div>
                     </div>
                 </div>
@@ -150,10 +134,6 @@
                             <span class="star">★</span>
                             <span>4.0</span>
                         </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">Rs.599.00</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -169,10 +149,6 @@
                         <div class="destination-rating">
                             <span class="star">★</span>
                             <span>4.7</span>
-                        </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">Rs.999.00</span>
                         </div>
                     </div>
                 </div>
@@ -190,10 +166,6 @@
                             <span class="star">★</span>
                             <span>4.0</span>
                         </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">Rs.1,299.00</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -209,10 +181,6 @@
                         <div class="destination-rating">
                             <span class="star">★</span>
                             <span>3.8</span>
-                        </div>
-                        <div class="destination-price">
-                            <span>From</span>
-                            <span class="price">Rs.700.00</span>
                         </div>
                     </div>
                 </div>
