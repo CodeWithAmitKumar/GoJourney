@@ -74,6 +74,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Initialize all major UI components
+    initSlider();
+    initTestimonialsSlider();
+    initTrendingSection();
+    initNumberInputs();
+    
     // Enable form validation for any forms on the page
     const forms = document.querySelectorAll('form');
     if (forms.length > 0) {
@@ -570,7 +576,461 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize Number Input Components
     initNumberInputs();
+
+    // Add event listeners for trending tour cards
+    // Handle view details buttons for tour cards
+    const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+    viewDetailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tourName = this.closest('.tour-card').querySelector('h3').textContent;
+            // For now just show an alert, in a real app this would navigate to a details page
+            alert(`You will be redirected to ${tourName} details page.`);
+            // Future implementation: window.location.href = `/tour-details.php?tour=${encodeURIComponent(tourName)}`;
+        });
+    });
+
+    // Handle "View All Destinations" button
+    const viewAllBtn = document.querySelector('.view-all-btn');
+    if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', function() {
+            // For now just show an alert, in a real app this would navigate to a listing page
+            alert('You will be redirected to all destinations page.');
+            // Future implementation: window.location.href = '/destinations.php';
+        });
+    }
+
+    // Add hover effects for tour cards
+    const tourCards = document.querySelectorAll('.tour-card');
+    tourCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.classList.add('hovered');
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.classList.remove('hovered');
+        });
+    });
+
+    // Add dynamic elements and enhanced interaction to tour cards
+    initTourCards();
+
+    // Add an automatic image slider function to the tour cards
+    const tourImageInterval = setInterval(() => {
+        const visibleCards = Array.from(document.querySelectorAll('.tour-card'))
+            .filter(card => {
+                const rect = card.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            });
+            
+        if (visibleCards.length > 0) {
+            // Select a random visible card
+            const randomCard = visibleCards[Math.floor(Math.random() * visibleCards.length)];
+            const img = randomCard.querySelector('.tour-image img');
+            
+            // Add a subtle pulse animation
+            if (img) {
+                img.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    img.style.transform = '';
+                }, 500);
+            }
+        }
+    }, 3000);
+    
+    // Clear the interval when the user leaves the page
+    window.addEventListener('beforeunload', () => {
+        clearInterval(tourImageInterval);
+    });
+
+    // Handle favorite buttons for tour cards
+    const favoriteButtons = document.querySelectorAll('.card-favorite');
+    
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Toggle active class
+            this.classList.toggle('active');
+            
+            // Change icon
+            const icon = this.querySelector('i');
+            if (this.classList.contains('active')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                
+                // Optional: Show a small notification
+                showNotification('Added to favorites!');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                
+                // Optional: Show a small notification
+                showNotification('Removed from favorites!');
+            }
+        });
+    });
+    
+    // Simple notification function
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'favorite-notification';
+        notification.textContent = message;
+        
+        // Add styles for the notification
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.right = '20px';
+        notification.style.backgroundColor = '#FF5722';
+        notification.style.color = 'white';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '5px';
+        notification.style.boxShadow = '0 3px 10px rgba(0,0,0,0.2)';
+        notification.style.zIndex = '9999';
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(20px)';
+        notification.style.transition = 'all 0.3s ease';
+        
+        document.body.appendChild(notification);
+        
+        // Show notification with animation
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Remove notification after 2 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(20px)';
+            
+            // Remove from DOM after animation
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 2000);
+    }
+
+    // Add this function to initialize the accordion tours
+    function initAccordionTours() {
+        const accordionTours = document.querySelectorAll('.accordion-tour');
+        
+        if (accordionTours.length === 0) return;
+        
+        // Set first item as expanded by default if none are expanded
+        let hasExpanded = false;
+        accordionTours.forEach(tour => {
+            if (tour.getAttribute('data-expanded') === 'true') {
+                hasExpanded = true;
+            }
+        });
+        
+        if (!hasExpanded && accordionTours.length > 0) {
+            accordionTours[0].setAttribute('data-expanded', 'true');
+        }
+        
+        accordionTours.forEach(tour => {
+            // Handle click on the accordion toggle button
+            const toggleBtn = tour.querySelector('.accordion-toggle');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const isExpanded = tour.getAttribute('data-expanded') === 'true';
+                    
+                    // Toggle the current accordion
+                    if (isExpanded) {
+                        tour.setAttribute('data-expanded', 'false');
+                    } else {
+                        tour.setAttribute('data-expanded', 'true');
+                    }
+                });
+            }
+            
+            // Handle click on the entire tour card
+            tour.addEventListener('click', function(e) {
+                // Don't trigger if clicking on the toggle button or favorite button
+                if (!e.target.closest('.accordion-toggle') && !e.target.closest('.card-favorite') && !e.target.closest('.view-details-btn')) {
+                    const isExpanded = this.getAttribute('data-expanded') === 'true';
+                    
+                    // Toggle the current accordion
+                    if (isExpanded) {
+                        this.setAttribute('data-expanded', 'false');
+                    } else {
+                        this.setAttribute('data-expanded', 'true');
+                    }
+                }
+            });
+            
+            // Handle view details button
+            const viewDetailsBtn = tour.querySelector('.view-details-btn');
+            if (viewDetailsBtn) {
+                viewDetailsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const tourName = tour.querySelector('h3').textContent;
+                    // For now just show an alert, in a real app this would navigate to a details page
+                    alert(`You will be redirected to ${tourName} details page.`);
+                    // Future implementation: window.location.href = `/tour-details.php?tour=${encodeURIComponent(tourName)}`;
+                });
+            }
+        });
+    }
+
+    // Initialize the accordion tours
+    initAccordionTours();
+
+    // Trending Tours Section Functionality
+    initTrendingSection();
 });
+
+function initTrendingSection() {
+    // Initialize filter buttons
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const trendingCards = document.querySelectorAll('.trending-card');
+    
+    // Set initial active filter
+    if (filterButtons.length > 0) {
+        filterButtons[0].classList.add('active');
+    }
+    
+    // Add click event to filter buttons
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filterValue = this.getAttribute('data-filter');
+            
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter cards
+            if (filterValue === 'all') {
+                // Show all cards
+                trendingCards.forEach(card => {
+                    animateCardIn(card);
+                });
+            } else {
+                // Filter cards by category
+                trendingCards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+                    
+                    if (cardCategory === filterValue) {
+                        animateCardIn(card);
+                    } else {
+                        animateCardOut(card);
+                    }
+                });
+            }
+        });
+    });
+    
+    // Initialize favorite buttons
+    const favoriteButtons = document.querySelectorAll('.favorite-btn');
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.toggle('active');
+            
+            const icon = this.querySelector('i');
+            if (icon) {
+                if (icon.classList.contains('fa-heart-o')) {
+                    icon.classList.remove('fa-heart-o');
+                    icon.classList.add('fa-heart');
+                    // Add heart animation
+                    animateHeart(this);
+                } else {
+                    icon.classList.remove('fa-heart');
+                    icon.classList.add('fa-heart-o');
+                }
+            }
+            
+            // You can add functionality to save favorites to local storage or database
+            const tourId = this.closest('.trending-card').getAttribute('data-id');
+            console.log(`Tour ${tourId} ${this.classList.contains('active') ? 'added to' : 'removed from'} favorites`);
+        });
+    });
+    
+    // Initialize share buttons
+    const shareButtons = document.querySelectorAll('.share-btn');
+    shareButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const tourCard = this.closest('.trending-card');
+            const tourTitle = tourCard.querySelector('h3').textContent;
+            const shareUrl = window.location.href;
+            
+            // Create a share message
+            const shareText = `Check out this amazing destination: ${tourTitle}`;
+            
+            // Check if Web Share API is available
+            if (navigator.share) {
+                navigator.share({
+                    title: tourTitle,
+                    text: shareText,
+                    url: shareUrl,
+                }).catch(error => {
+                    console.warn('Error sharing:', error);
+                    showShareFallback(this, tourTitle, shareUrl);
+                });
+            } else {
+                showShareFallback(this, tourTitle, shareUrl);
+            }
+        });
+    });
+    
+    // Initialize view more button
+    const loadMoreBtn = document.querySelector('.trending-load-more');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // You can implement AJAX loading of more tours here
+            // For now, let's just show a message
+            const icon = this.querySelector('i');
+            this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Loading...';
+            
+            // Simulate loading more content
+            setTimeout(() => {
+                // Reset button text after "loading"
+                this.innerHTML = 'View All Destinations <i class="fa fa-arrow-right"></i>';
+                
+                // Show notification
+                showNotification('More destinations coming soon!', 'info');
+            }, 1500);
+        });
+    }
+    
+    // Initialize hover effect for cards
+    trendingCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const image = this.querySelector('.trending-card-image img');
+            if (image) {
+                image.style.transform = 'scale(1.05)';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            const image = this.querySelector('.trending-card-image img');
+            if (image) {
+                image.style.transform = 'scale(1)';
+            }
+        });
+    });
+}
+
+// Animation functions
+function animateCardIn(card) {
+    card.style.display = 'flex';
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    }, 50);
+}
+
+function animateCardOut(card) {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+        card.style.display = 'none';
+    }, 300);
+}
+
+function animateHeart(button) {
+    // Create and append heart elements for animation
+    for (let i = 0; i < 5; i++) {
+        const heart = document.createElement('span');
+        heart.classList.add('heart-particle');
+        heart.innerHTML = '<i class="fa fa-heart"></i>';
+        heart.style.top = '50%';
+        heart.style.left = '50%';
+        heart.style.position = 'absolute';
+        heart.style.color = '#FF5722';
+        heart.style.transform = 'translate(-50%, -50%)';
+        heart.style.opacity = '1';
+        heart.style.fontSize = `${Math.random() * 10 + 5}px`;
+        heart.style.zIndex = '10';
+        button.appendChild(heart);
+        
+        // Animate the heart
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 60 + 20;
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
+        
+        // Using GSAP would be ideal, but we'll use CSS animations
+        heart.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        setTimeout(() => {
+            heart.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+            heart.style.opacity = '0';
+        }, 50);
+        
+        // Remove the heart element after animation
+        setTimeout(() => {
+            heart.remove();
+        }, 800);
+    }
+}
+
+function showShareFallback(button, title, url) {
+    // Create a simple fallback for sharing
+    // You can implement a custom share dialog here
+    
+    // Create temporary input for copy to clipboard
+    const input = document.createElement('input');
+    input.value = url;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    
+    // Show notification
+    showNotification('Link copied to clipboard!', 'success');
+    
+    // Animate button
+    button.classList.add('share-active');
+    setTimeout(() => {
+        button.classList.remove('share-active');
+    }, 1000);
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.classList.add('toast-notification', `toast-${type}`);
+    notification.innerHTML = `
+        <div class="toast-icon">
+            <i class="fa fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        </div>
+        <div class="toast-message">${message}</div>
+    `;
+    
+    // Add to the DOM
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    // Animate out and remove
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
 
 // Function to initialize number input components
 function initNumberInputs() {
@@ -647,4 +1107,122 @@ function updateButtonState(input, minusBtn, plusBtn) {
         plusBtn.classList.remove('disabled');
         plusBtn.disabled = false;
     }
+}
+
+// Add dynamic elements and enhanced interaction to tour cards
+function initTourCards() {
+    const tourCards = document.querySelectorAll('.tour-card');
+    
+    tourCards.forEach(card => {
+        // Add favorite button to each card
+        const imageContainer = card.querySelector('.tour-image');
+        if (imageContainer && !imageContainer.querySelector('.card-favorite')) {
+            const favoriteBtn = document.createElement('div');
+            favoriteBtn.className = 'card-favorite';
+            favoriteBtn.innerHTML = '<i class="far fa-heart"></i>';
+            imageContainer.appendChild(favoriteBtn);
+            
+            // Add click functionality
+            favoriteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.toggle('active');
+                
+                const icon = this.querySelector('i');
+                if (this.classList.contains('active')) {
+                    icon.className = 'fas fa-heart';
+                    // Optional: Show feedback to user
+                    showToast('Added to favorites!');
+                } else {
+                    icon.className = 'far fa-heart';
+                    // Optional: Show feedback to user
+                    showToast('Removed from favorites.');
+                }
+            });
+        }
+        
+        // Enhance view details button with animated icon
+        const viewDetailsBtn = card.querySelector('.view-details-btn');
+        if (viewDetailsBtn && !viewDetailsBtn.querySelector('i')) {
+            viewDetailsBtn.innerHTML += ' <i class="fas fa-arrow-right"></i>';
+        }
+        
+        // Make entire card clickable
+        card.addEventListener('click', function(e) {
+            // Don't trigger if clicking on the favorite button
+            if (!e.target.closest('.card-favorite')) {
+                const detailsBtn = this.querySelector('.view-details-btn');
+                if (detailsBtn) {
+                    const tourName = this.querySelector('h3').textContent;
+                    // Show an animation on the button when clicked
+                    detailsBtn.classList.add('clicked');
+                    setTimeout(() => {
+                        detailsBtn.classList.remove('clicked');
+                        // Then navigate or show modal
+                        alert(`You will be redirected to ${tourName} details page.`);
+                    }, 300);
+                }
+            }
+        });
+    });
+}
+
+// Simple toast notification function
+function showToast(message) {
+    // Check if a toast container already exists
+    let toastContainer = document.querySelector('.toast-container');
+    
+    // If not, create one
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container';
+        document.body.appendChild(toastContainer);
+        
+        // Add some basic styles to the toast container
+        toastContainer.style.position = 'fixed';
+        toastContainer.style.bottom = '20px';
+        toastContainer.style.right = '20px';
+        toastContainer.style.zIndex = '9999';
+    }
+    
+    // Create a new toast
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = message;
+    
+    // Style the toast
+    toast.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    toast.style.color = 'white';
+    toast.style.padding = '10px 15px';
+    toast.style.borderRadius = '4px';
+    toast.style.marginTop = '10px';
+    toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
+    toast.style.transition = 'all 0.3s ease';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(20px)';
+    
+    // Add to container
+    toastContainer.appendChild(toast);
+    
+    // Trigger animation
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    }, 10);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        
+        // Remove from DOM after animation completes
+        setTimeout(() => {
+            toastContainer.removeChild(toast);
+            
+            // If no more toasts, remove the container
+            if (toastContainer.children.length === 0) {
+                document.body.removeChild(toastContainer);
+            }
+        }, 300);
+    }, 3000);
 } 

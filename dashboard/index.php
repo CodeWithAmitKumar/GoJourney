@@ -364,6 +364,275 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
                     </div>
                 </div>
                 
+                <!-- Trending Tour Places - Modern Design -->
+                <div class="trending-section">
+                    <div class="trending-header">
+                        <h2><i class="fas fa-fire"></i> Trending Tour Places</h2>
+                        <p>Discover the most popular destinations loved by travelers</p>
+                        <div class="trending-filters">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="beaches">Beaches</button>
+                            <button class="filter-btn" data-filter="temples">Temples</button>
+                            <button class="filter-btn" data-filter="nature">Nature</button>
+                        </div>
+                    </div>
+                    
+                    <div class="trending-grid">
+                        <!-- Chilika Lake -->
+                        <div class="trending-card" data-category="nature">
+                            <div class="trending-card-image">
+                                <img src="../images/destinations/chilika.jpg" alt="Chilika Lake">
+                                <div class="trending-card-tag">Popular</div>
+                                <button class="favorite-btn"><i class="far fa-heart"></i></button>
+                                <div class="trending-overlay">
+                                    <div class="trending-stats">
+                                        <span><i class="fas fa-star"></i> 4.5</span>
+                                        <span><i class="fas fa-eye"></i> 2.4k</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="trending-card-content">
+                                <div class="trending-card-top">
+                                    <h3>Chilika Lake</h3>
+                                    <span class="trending-price">₹5,999</span>
+                                </div>
+                                <p>Asia's largest brackish water lagoon, home to diverse wildlife including dolphins and migratory birds.</p>
+                                <div class="trending-card-info">
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Puri, Odisha</span>
+                                    </div>
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>2 Days</span>
+                                    </div>
+                                </div>
+                                <div class="trending-card-actions">
+                                    <button class="trending-action-btn details-btn">
+                                        <span>View Details</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                    <button class="trending-action-btn share-btn">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Konark Sun Temple -->
+                        <div class="trending-card" data-category="temples">
+                            <div class="trending-card-image">
+                                <img src="../images/destinations/konark.jpg" alt="Konark Sun Temple">
+                                <div class="trending-card-tag hot">Trending</div>
+                                <button class="favorite-btn"><i class="far fa-heart"></i></button>
+                                <div class="trending-overlay">
+                                    <div class="trending-stats">
+                                        <span><i class="fas fa-star"></i> 4.8</span>
+                                        <span><i class="fas fa-eye"></i> 3.1k</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="trending-card-content">
+                                <div class="trending-card-top">
+                                    <h3>Konark Sun Temple</h3>
+                                    <span class="trending-price">₹3,499</span>
+                                </div>
+                                <p>UNESCO World Heritage site featuring magnificent 13th-century architecture with intricate stone carvings.</p>
+                                <div class="trending-card-info">
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Konark, Odisha</span>
+                                    </div>
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>1 Day</span>
+                                    </div>
+                                </div>
+                                <div class="trending-card-actions">
+                                    <button class="trending-action-btn details-btn">
+                                        <span>View Details</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                    <button class="trending-action-btn share-btn">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Puri Beach -->
+                        <div class="trending-card" data-category="beaches">
+                            <div class="trending-card-image">
+                                <img src="../images/destinations/puri.jpg" alt="Puri Beach">
+                                <div class="trending-card-tag bestseller">Best Seller</div>
+                                <button class="favorite-btn"><i class="far fa-heart"></i></button>
+                                <div class="trending-overlay">
+                                    <div class="trending-stats">
+                                        <span><i class="fas fa-star"></i> 4.6</span>
+                                        <span><i class="fas fa-eye"></i> 2.8k</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="trending-card-content">
+                                <div class="trending-card-top">
+                                    <h3>Puri Beach & Jagannath Temple</h3>
+                                    <span class="trending-price">₹7,999</span>
+                                </div>
+                                <p>Experience the spiritual charm of Jagannath Temple and relax on the pristine beaches of Puri.</p>
+                                <div class="trending-card-info">
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Puri, Odisha</span>
+                                    </div>
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>3 Days</span>
+                                    </div>
+                                </div>
+                                <div class="trending-card-actions">
+                                    <button class="trending-action-btn details-btn">
+                                        <span>View Details</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                    <button class="trending-action-btn share-btn">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lingaraj Temple -->
+                        <div class="trending-card" data-category="temples">
+                            <div class="trending-card-image">
+                                <img src="../images/destinations/lingaraj.jpg" alt="Lingaraj Temple">
+                                <div class="trending-card-tag new">New</div>
+                                <button class="favorite-btn"><i class="far fa-heart"></i></button>
+                                <div class="trending-overlay">
+                                    <div class="trending-stats">
+                                        <span><i class="fas fa-star"></i> 4.0</span>
+                                        <span><i class="fas fa-eye"></i> 1.9k</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="trending-card-content">
+                                <div class="trending-card-top">
+                                    <h3>Lingaraj Temple & Bhubaneswar Tour</h3>
+                                    <span class="trending-price">₹4,799</span>
+                                </div>
+                                <p>Explore the magnificent Lingaraj Temple and the historic sites of Bhubaneswar, the Temple City of India.</p>
+                                <div class="trending-card-info">
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Bhubaneswar, Odisha</span>
+                                    </div>
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>2 Days</span>
+                                    </div>
+                                </div>
+                                <div class="trending-card-actions">
+                                    <button class="trending-action-btn details-btn">
+                                        <span>View Details</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                    <button class="trending-action-btn share-btn">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Barehipani Waterfall -->
+                        <div class="trending-card" data-category="nature">
+                            <div class="trending-card-image">
+                                <img src="../images/destinations/barheipani.png" alt="Barehipani Waterfall">
+                                <div class="trending-card-tag special">Special</div>
+                                <button class="favorite-btn"><i class="far fa-heart"></i></button>
+                                <div class="trending-overlay">
+                                    <div class="trending-stats">
+                                        <span><i class="fas fa-star"></i> 4.7</span>
+                                        <span><i class="fas fa-eye"></i> 2.2k</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="trending-card-content">
+                                <div class="trending-card-top">
+                                    <h3>Simlipal National Park & Barehipani</h3>
+                                    <span class="trending-price">₹9,999</span>
+                                </div>
+                                <p>Adventure through Simlipal National Park and witness the stunning Barehipani waterfall, one of India's highest.</p>
+                                <div class="trending-card-info">
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Mayurbhanj, Odisha</span>
+                                    </div>
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>4 Days</span>
+                                    </div>
+                                </div>
+                                <div class="trending-card-actions">
+                                    <button class="trending-action-btn details-btn">
+                                        <span>View Details</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                    <button class="trending-action-btn share-btn">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chandrabhaga Beach -->
+                        <div class="trending-card" data-category="beaches">
+                            <div class="trending-card-image">
+                                <img src="../images/destinations/chandrabhaga.jpg" alt="Chandrabhaga Beach">
+                                <div class="trending-card-tag deal">Hot Deal</div>
+                                <button class="favorite-btn"><i class="far fa-heart"></i></button>
+                                <div class="trending-overlay">
+                                    <div class="trending-stats">
+                                        <span><i class="fas fa-star"></i> 3.5</span>
+                                        <span><i class="fas fa-eye"></i> 1.7k</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="trending-card-content">
+                                <div class="trending-card-top">
+                                    <h3>Chandrabhaga Beach Retreat</h3>
+                                    <span class="trending-price">₹4,299</span>
+                                </div>
+                                <p>Relax at the serene Chandrabhaga Beach, known for its pristine shores and beautiful sunrise views.</p>
+                                <div class="trending-card-info">
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Konark, Odisha</span>
+                                    </div>
+                                    <div class="trending-info-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>2 Days</span>
+                                    </div>
+                                </div>
+                                <div class="trending-card-actions">
+                                    <button class="trending-action-btn details-btn">
+                                        <span>View Details</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                    <button class="trending-action-btn share-btn">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="trending-footer">
+                        <button class="trending-load-more">
+                            <span>View All Destinations</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Why Book With Us Section -->
                 <div class="why-book-container">
                     <h2><i class="fas fa-award"></i> Why Book With Us</h2>
