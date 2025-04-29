@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Explorer</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="travel-explorer-container">
+        <div class="explorer-header">
+            <h2>Travel Explorer</h2>
+            <div class="explorer-controls">
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" data-view="grid" title="Grid View">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-toggle-btn" data-view="list" title="List View">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+                <div class="explorer-search">
+                    <input type="text" placeholder="Search destinations..." id="explorer-search-input">
+                    <button class="search-btn" title="Search Destinations"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="explorer-filter">
+                    <select id="filter-dropdown" title="Filter Destinations">
+                        <option value="all">All Destinations</option>
+                        <option value="popular">Popular</option>
+                        <option value="trending">Trending</option>
+                        <option value="budget">Budget-friendly</option>
+                        <option value="luxury">Luxury</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cards-container grid-view">
+            <!-- Travel Card 1 -->
+            <div class="travel-card" data-category="popular luxury">
+                <div class="card-image">
+                    <div class="image-container">
+                        <img src="../images/destinations/puri.jpg" alt="Puri Beach">
+                        <img src="../images/destinations/konark.jpg" alt="Konark Temple">
+                        <img src="../images/destinations/chandrabhaga.jpg" alt="Chandrabhaga Beach">
+                    </div>
+                    <div class="image-dots">
+                        <span class="image-dot active" data-index="0"></span>
+                        <span class="image-dot" data-index="1"></span>
+                        <span class="image-dot" data-index="2"></span>
+                    </div>
+                    <div class="image-nav prev" title="Previous Image"><i class="fas fa-chevron-left"></i></div>
+                    <div class="image-nav next" title="Next Image"><i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Puri Beach Getaway</h3>
+                    <p class="card-description">Experience the tranquil beaches of Puri with visits to the historic Konark Sun Temple and beautiful Chandrabhaga coastline.</p>
+                    <div class="card-footer">
+                        <div class="card-price">₹12,999</div>
+                        <div class="card-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.5</span>
+                        </div>
+                    </div>
+                    <div class="card-buttons">
+                        <button class="wishlist-btn" title="Add to Wishlist"><i class="far fa-heart"></i> Wishlist</button>
+                        <button class="compare-btn" title="Compare"><i class="fas fa-exchange-alt"></i> Compare</button>
+                        <button class="details-btn" title="View Details"><i class="fas fa-info-circle"></i> Details</button>
+                        <button class="quick-book-btn" title="Quick Book"><i class="fas fa-calendar-check"></i> Quick Book</button>
+                        <button class="quick-inquiry-btn" title="Send Inquiry"><i class="fas fa-question-circle"></i> Inquiry</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Travel Card 2 -->
+            <div class="travel-card" data-category="trending budget">
+                <div class="card-image">
+                    <div class="image-container">
+                        <img src="../images/destinations/chilika.jpg" alt="Chilika Lake">
+                        <img src="../images/destinations/barheipani.png" alt="Barheipani Waterfall">
+                        <img src="../images/destinations/tunki.jpg" alt="Tunki Hills">
+                    </div>
+                    <div class="image-dots">
+                        <span class="image-dot active" data-index="0"></span>
+                        <span class="image-dot" data-index="1"></span>
+                        <span class="image-dot" data-index="2"></span>
+                    </div>
+                    <div class="image-nav prev" title="Previous Image"><i class="fas fa-chevron-left"></i></div>
+                    <div class="image-nav next" title="Next Image"><i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Chilika Lake Adventure</h3>
+                    <p class="card-description">Discover the breathtaking Chilika Lake, Asia's largest brackish water lagoon, along with nearby natural wonders.</p>
+                    <div class="card-footer">
+                        <div class="card-price">₹9,499</div>
+                        <div class="card-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <span>4.0</span>
+                        </div>
+                    </div>
+                    <div class="card-buttons">
+                        <button class="wishlist-btn" title="Add to Wishlist"><i class="far fa-heart"></i> Wishlist</button>
+                        <button class="compare-btn" title="Compare"><i class="fas fa-exchange-alt"></i> Compare</button>
+                        <button class="details-btn" title="View Details"><i class="fas fa-info-circle"></i> Details</button>
+                        <button class="quick-book-btn" title="Quick Book"><i class="fas fa-calendar-check"></i> Quick Book</button>
+                        <button class="quick-inquiry-btn" title="Send Inquiry"><i class="fas fa-question-circle"></i> Inquiry</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Travel Card 3 -->
+            <div class="travel-card" data-category="popular budget">
+                <div class="card-image">
+                    <div class="image-container">
+                        <img src="../images/destinations/lingaraj.jpg" alt="Lingaraj Temple">
+                        <img src="../images/destinations/tarinitemple.jpg" alt="Tarini Temple">
+                        <img src="../images/destinations/shreeRam.jpg" alt="Shree Ram Temple">
+                    </div>
+                    <div class="image-dots">
+                        <span class="image-dot active" data-index="0"></span>
+                        <span class="image-dot" data-index="1"></span>
+                        <span class="image-dot" data-index="2"></span>
+                    </div>
+                    <div class="image-nav prev" title="Previous Image"><i class="fas fa-chevron-left"></i></div>
+                    <div class="image-nav next" title="Next Image"><i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Temple Trail Tour</h3>
+                    <p class="card-description">Explore the sacred temples of Odisha, including the magnificent Lingaraj Temple, Tarini Temple, and Shree Ram Temple.</p>
+                    <div class="card-footer">
+                        <div class="card-price">₹8,299</div>
+                        <div class="card-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>4.8</span>
+                        </div>
+                    </div>
+                    <div class="card-buttons">
+                        <button class="wishlist-btn" title="Add to Wishlist"><i class="far fa-heart"></i> Wishlist</button>
+                        <button class="compare-btn" title="Compare"><i class="fas fa-exchange-alt"></i> Compare</button>
+                        <button class="details-btn" title="View Details"><i class="fas fa-info-circle"></i> Details</button>
+                        <button class="quick-book-btn" title="Quick Book"><i class="fas fa-calendar-check"></i> Quick Book</button>
+                        <button class="quick-inquiry-btn" title="Send Inquiry"><i class="fas fa-question-circle"></i> Inquiry</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Travel Card 4 -->
+            <div class="travel-card" data-category="luxury trending">
+                <div class="card-image">
+                    <div class="image-container">
+                        <img src="../images/destinations/itr.webp" alt="India Tourism Resort">
+                        <img src="../images/destinations/puri.jpg" alt="Puri Beach View">
+                        <img src="../images/destinations/konark.jpg" alt="Konark Temple">
+                    </div>
+                    <div class="image-dots">
+                        <span class="image-dot active" data-index="0"></span>
+                        <span class="image-dot" data-index="1"></span>
+                        <span class="image-dot" data-index="2"></span>
+                    </div>
+                    <div class="image-nav prev" title="Previous Image"><i class="fas fa-chevron-left"></i></div>
+                    <div class="image-nav next" title="Next Image"><i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Luxury Odisha Experience</h3>
+                    <p class="card-description">Indulge in a luxury tour of Odisha's finest attractions with premium accommodations and exclusive cultural experiences.</p>
+                    <div class="card-footer">
+                        <div class="card-price">₹18,999</div>
+                        <div class="card-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>4.6</span>
+                        </div>
+                    </div>
+                    <div class="card-buttons">
+                        <button class="wishlist-btn" title="Add to Wishlist"><i class="far fa-heart"></i> Wishlist</button>
+                        <button class="compare-btn" title="Compare"><i class="fas fa-exchange-alt"></i> Compare</button>
+                        <button class="details-btn" title="View Details"><i class="fas fa-info-circle"></i> Details</button>
+                        <button class="quick-book-btn" title="Quick Book"><i class="fas fa-calendar-check"></i> Quick Book</button>
+                        <button class="quick-inquiry-btn" title="Send Inquiry"><i class="fas fa-question-circle"></i> Inquiry</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initTravelExplorer();
+        });
+    </script>
+</body>
+</html> 

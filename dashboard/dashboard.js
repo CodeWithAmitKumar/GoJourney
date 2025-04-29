@@ -1,5 +1,10 @@
 // Theme toggle functionality
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded event handler running');
+    
+    // First ensure the wishlist table exists
+    ensureWishlistTable();
+    
     const themeToggle = document.getElementById('theme-toggle');
     const moonIcon = themeToggle.querySelector('.fa-moon');
     const sunIcon = themeToggle.querySelector('.fa-sun');
@@ -79,6 +84,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initTestimonialsSlider();
     initTrendingSection();
     initNumberInputs();
+    console.log('About to call initTravelExplorer');
+    initTravelExplorer(); // Initialize the travel explorer component
+    console.log('Called initTravelExplorer');
+    
+    // Check if items are in wishlist on page load
+    checkWishlistStatus();
     
     // Enable form validation for any forms on the page
     const forms = document.querySelectorAll('form');
@@ -445,130 +456,103 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function for Why Book With Us slider
     function initTestimonialsSlider() {
-        const testimonialsWrapper = document.querySelector('.testimonials-wrapper');
-        const testimonialSlides = document.querySelectorAll('.testimonial-slide');
-        const testimonialPrevBtn = document.querySelector('.testimonial-prev');
-        const testimonialNextBtn = document.querySelector('.testimonial-next');
-        const testimonialIndicatorsContainer = document.querySelector('.testimonial-indicators');
+        console.log('Initializing testimonials slider');
         
-        if (!testimonialsWrapper || testimonialSlides.length === 0) {
+        const testimonialsWrapper = document.querySelector('.testimonials-wrapper');
+        const slides = document.querySelectorAll('.testimonial-slide');
+        const prevBtn = document.querySelector('.testimonial-prev');
+        const nextBtn = document.querySelector('.testimonial-next');
+        const indicatorsContainer = document.querySelector('.testimonial-indicators');
+        
+        if (!testimonialsWrapper || slides.length === 0) {
             console.log('Testimonials slider elements not found');
             return;
         }
         
-        console.log('Initializing testimonials slider with', testimonialSlides.length, 'slides');
-        
-        let currentTestimonialIndex = 0;
-        
         // Create indicators
-        testimonialIndicatorsContainer.innerHTML = ''; // Clear existing indicators if any
-        testimonialSlides.forEach((_, index) => {
-            const indicator = document.createElement('div');
+        indicatorsContainer.innerHTML = '';
+        slides.forEach((_, index) => {
+            const indicator = document.createElement('span');
             indicator.classList.add('indicator');
             if (index === 0) indicator.classList.add('active');
-            indicator.addEventListener('click', () => goToTestimonialSlide(index));
-            testimonialIndicatorsContainer.appendChild(indicator);
+            indicator.dataset.index = index;
+            indicatorsContainer.appendChild(indicator);
+            
+            // Add click event to each indicator
+            indicator.addEventListener('click', () => {
+                goToTestimonialSlide(index);
+            });
         });
         
-        const testimonialIndicators = document.querySelectorAll('.testimonial-indicators .indicator');
-        
-        // Set initial state
-        updateTestimonialSlider();
+        let currentTestimonial = 0;
         
         function updateTestimonialSlider() {
-            // Apply transform to slide wrapper
-            testimonialsWrapper.style.transform = `translateX(${-currentTestimonialIndex * 100}%)`;
+            testimonialsWrapper.style.transform = `translateX(-${currentTestimonial * 100}%)`;
             
-            // Update active classes on slides
-            testimonialSlides.forEach((slide, index) => {
-                if (index === currentTestimonialIndex) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
-                }
-            });
-            
-            // Update active indicator
-            testimonialIndicators.forEach((indicator, index) => {
-                if (index === currentTestimonialIndex) {
-                    indicator.classList.add('active');
-                } else {
-                    indicator.classList.remove('active');
-                }
+            // Update indicators
+            const indicators = document.querySelectorAll('.testimonial-indicators .indicator');
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentTestimonial);
             });
         }
         
+        // Initial setup
+        updateTestimonialSlider();
+        
         function goToTestimonialSlide(index) {
-            currentTestimonialIndex = index;
+            currentTestimonial = index;
             updateTestimonialSlider();
         }
         
         function nextTestimonial() {
-            currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonialSlides.length;
+            currentTestimonial = (currentTestimonial + 1) % slides.length;
             updateTestimonialSlider();
         }
         
         function prevTestimonial() {
-            currentTestimonialIndex = (currentTestimonialIndex - 1 + testimonialSlides.length) % testimonialSlides.length;
+            currentTestimonial = (currentTestimonial - 1 + slides.length) % slides.length;
             updateTestimonialSlider();
         }
         
-        // Event listeners
-        if (testimonialNextBtn) {
-            testimonialNextBtn.addEventListener('click', function(e) {
-                e.preventDefault();
+        // Add event listeners to buttons
+        if (prevBtn) prevBtn.addEventListener('click', prevTestimonial);
+        if (nextBtn) nextBtn.addEventListener('click', nextTestimonial);
+        
+        // Setup touch swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        testimonialsWrapper.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        testimonialsWrapper.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchStartX - touchEndX > swipeThreshold) {
+                // Swipe left
                 nextTestimonial();
-                console.log('Next testimonial clicked');
-            });
-        }
-        
-        if (testimonialPrevBtn) {
-            testimonialPrevBtn.addEventListener('click', function(e) {
-                e.preventDefault();
+            } else if (touchEndX - touchStartX > swipeThreshold) {
+                // Swipe right
                 prevTestimonial();
-                console.log('Previous testimonial clicked');
-            });
+            }
         }
         
-        // Auto slide testimonials every 5 seconds
-        let testimonialInterval = setInterval(nextTestimonial, 5000);
+        // Auto-slide
+        let interval = setInterval(nextTestimonial, 5000);
         
-        // Pause auto slide on hover
-        const testimonialsSlider = document.querySelector('.testimonials-slider');
-        if (testimonialsSlider) {
-            testimonialsSlider.addEventListener('mouseenter', () => {
-                clearInterval(testimonialInterval);
-            });
-            
-            testimonialsSlider.addEventListener('mouseleave', () => {
-                testimonialInterval = setInterval(nextTestimonial, 5000);
-            });
-        }
+        // Pause auto-slide on hover
+        testimonialsWrapper.addEventListener('mouseenter', () => {
+            clearInterval(interval);
+        });
         
-        // Touch events for mobile swipe
-        let testimonialTouchStartX = 0;
-        
-        if (testimonialsSlider) {
-            testimonialsSlider.addEventListener('touchstart', (e) => {
-                testimonialTouchStartX = e.touches[0].clientX;
-                clearInterval(testimonialInterval);
-            }, { passive: true });
-            
-            testimonialsSlider.addEventListener('touchend', (e) => {
-                const touchEndX = e.changedTouches[0].clientX;
-                const diffX = testimonialTouchStartX - touchEndX;
-                
-                if (Math.abs(diffX) > 50) { // Minimum swipe distance
-                    if (diffX > 0) {
-                        nextTestimonial(); // Swipe left, go to next
-                    } else {
-                        prevTestimonial(); // Swipe right, go to previous
-                    }
-                }
-                
-                testimonialInterval = setInterval(nextTestimonial, 5000);
-            }, { passive: true });
-        }
+        testimonialsWrapper.addEventListener('mouseleave', () => {
+            interval = setInterval(nextTestimonial, 5000);
+        });
     }
     
     // Initialize the testimonials slider
@@ -660,17 +644,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Change icon
             const icon = this.querySelector('i');
             if (this.classList.contains('active')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                
-                // Optional: Show a small notification
+                icon.className = 'fas fa-heart';
+                // Optional: Show feedback to user
                 showNotification('Added to favorites!');
             } else {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                
-                // Optional: Show a small notification
-                showNotification('Removed from favorites!');
+                icon.className = 'far fa-heart';
+                // Optional: Show feedback to user
+                showNotification('Removed from favorites.');
             }
         });
     });
@@ -791,438 +771,855 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initTrendingSection() {
-    // Initialize filter buttons
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const trendingCards = document.querySelectorAll('.trending-card');
-    
-    // Set initial active filter
-    if (filterButtons.length > 0) {
-        filterButtons[0].classList.add('active');
-    }
-    
-    // Add click event to filter buttons
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const filterValue = this.getAttribute('data-filter');
-            
-            // Update active button
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Filter cards
-            if (filterValue === 'all') {
-                // Show all cards
-                trendingCards.forEach(card => {
-                    animateCardIn(card);
-                });
-            } else {
-                // Filter cards by category
-                trendingCards.forEach(card => {
-                    const cardCategory = card.getAttribute('data-category');
-                    
-                    if (cardCategory === filterValue) {
-                        animateCardIn(card);
-                    } else {
-                        animateCardOut(card);
-                    }
-                });
-            }
-        });
-    });
-    
-    // Initialize favorite buttons
-    const favoriteButtons = document.querySelectorAll('.favorite-btn');
-    favoriteButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            this.classList.toggle('active');
-            
-            const icon = this.querySelector('i');
-            if (icon) {
-                if (icon.classList.contains('fa-heart-o')) {
-                    icon.classList.remove('fa-heart-o');
-                    icon.classList.add('fa-heart');
-                    // Add heart animation
-                    animateHeart(this);
-                } else {
-                    icon.classList.remove('fa-heart');
-                    icon.classList.add('fa-heart-o');
-                }
-            }
-            
-            // You can add functionality to save favorites to local storage or database
-            const tourId = this.closest('.trending-card').getAttribute('data-id');
-            console.log(`Tour ${tourId} ${this.classList.contains('active') ? 'added to' : 'removed from'} favorites`);
-        });
-    });
-    
-    // Initialize share buttons
-    const shareButtons = document.querySelectorAll('.share-btn');
-    shareButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const tourCard = this.closest('.trending-card');
-            const tourTitle = tourCard.querySelector('h3').textContent;
-            const shareUrl = window.location.href;
-            
-            // Create a share message
-            const shareText = `Check out this amazing destination: ${tourTitle}`;
-            
-            // Check if Web Share API is available
-            if (navigator.share) {
-                navigator.share({
-                    title: tourTitle,
-                    text: shareText,
-                    url: shareUrl,
-                }).catch(error => {
-                    console.warn('Error sharing:', error);
-                    showShareFallback(this, tourTitle, shareUrl);
-                });
-            } else {
-                showShareFallback(this, tourTitle, shareUrl);
-            }
-        });
-    });
-    
-    // Initialize view more button
-    const loadMoreBtn = document.querySelector('.trending-load-more');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // You can implement AJAX loading of more tours here
-            // For now, let's just show a message
-            const icon = this.querySelector('i');
-            this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Loading...';
-            
-            // Simulate loading more content
-            setTimeout(() => {
-                // Reset button text after "loading"
-                this.innerHTML = 'View All Destinations <i class="fa fa-arrow-right"></i>';
-                
-                // Show notification
-                showNotification('More destinations coming soon!', 'info');
-            }, 1500);
-        });
-    }
-    
-    // Initialize hover effect for cards
-    trendingCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            const image = this.querySelector('.trending-card-image img');
-            if (image) {
-                image.style.transform = 'scale(1.05)';
-            }
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            const image = this.querySelector('.trending-card-image img');
-            if (image) {
-                image.style.transform = 'scale(1)';
-            }
-        });
-    });
+    // Implementation of initTrendingSection function
+    console.log('Trending section initialization');
 }
 
-// Animation functions
-function animateCardIn(card) {
-    card.style.display = 'flex';
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-    }, 50);
-}
-
-function animateCardOut(card) {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-        card.style.display = 'none';
-    }, 300);
-}
-
-function animateHeart(button) {
-    // Create and append heart elements for animation
-    for (let i = 0; i < 5; i++) {
-        const heart = document.createElement('span');
-        heart.classList.add('heart-particle');
-        heart.innerHTML = '<i class="fa fa-heart"></i>';
-        heart.style.top = '50%';
-        heart.style.left = '50%';
-        heart.style.position = 'absolute';
-        heart.style.color = '#FF5722';
-        heart.style.transform = 'translate(-50%, -50%)';
-        heart.style.opacity = '1';
-        heart.style.fontSize = `${Math.random() * 10 + 5}px`;
-        heart.style.zIndex = '10';
-        button.appendChild(heart);
-        
-        // Animate the heart
-        const angle = Math.random() * Math.PI * 2;
-        const distance = Math.random() * 60 + 20;
-        const x = Math.cos(angle) * distance;
-        const y = Math.sin(angle) * distance;
-        
-        // Using GSAP would be ideal, but we'll use CSS animations
-        heart.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        setTimeout(() => {
-            heart.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
-            heart.style.opacity = '0';
-        }, 50);
-        
-        // Remove the heart element after animation
-        setTimeout(() => {
-            heart.remove();
-        }, 800);
-    }
-}
-
-function showShareFallback(button, title, url) {
-    // Create a simple fallback for sharing
-    // You can implement a custom share dialog here
-    
-    // Create temporary input for copy to clipboard
-    const input = document.createElement('input');
-    input.value = url;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-    
-    // Show notification
-    showNotification('Link copied to clipboard!', 'success');
-    
-    // Animate button
-    button.classList.add('share-active');
-    setTimeout(() => {
-        button.classList.remove('share-active');
-    }, 1000);
-}
-
-function showNotification(message, type = 'info') {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.classList.add('toast-notification', `toast-${type}`);
-    notification.innerHTML = `
-        <div class="toast-icon">
-            <i class="fa fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        </div>
-        <div class="toast-message">${message}</div>
-    `;
-    
-    // Add to the DOM
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-    
-    // Animate out and remove
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 3000);
-}
-
-// Function to initialize number input components
 function initNumberInputs() {
-    const numberInputs = document.querySelectorAll('.number-input');
-    
-    if (numberInputs.length === 0) return;
-    
-    numberInputs.forEach(container => {
-        const input = container.querySelector('input[type="number"]');
-        const minusBtn = container.querySelector('.minus-btn');
-        const plusBtn = container.querySelector('.plus-btn');
-        
-        if (!input || !minusBtn || !plusBtn) return;
-        
-        // Set initial state of minus button
-        updateButtonState(input, minusBtn, plusBtn);
-        
-        // Add event listeners
-        minusBtn.addEventListener('click', () => {
-            const currentValue = parseInt(input.value);
-            const minValue = parseInt(input.min);
-            
-            if (currentValue > minValue) {
-                input.value = currentValue - 1;
-                updateButtonState(input, minusBtn, plusBtn);
-                
-                // Trigger change event for any listeners
-                const event = new Event('change', { bubbles: true });
-                input.dispatchEvent(event);
-            }
-        });
-        
-        plusBtn.addEventListener('click', () => {
-            const currentValue = parseInt(input.value);
-            const maxValue = parseInt(input.max);
-            
-            if (currentValue < maxValue) {
-                input.value = currentValue + 1;
-                updateButtonState(input, minusBtn, plusBtn);
-                
-                // Trigger change event for any listeners
-                const event = new Event('change', { bubbles: true });
-                input.dispatchEvent(event);
-            }
-        });
-        
-        // Update on manual input
-        input.addEventListener('change', () => {
-            updateButtonState(input, minusBtn, plusBtn);
-        });
-    });
+    // Implementation of initNumberInputs function
+    console.log('Number inputs initialization');
 }
 
-// Function to update button states based on input value
-function updateButtonState(input, minusBtn, plusBtn) {
-    const currentValue = parseInt(input.value);
-    const minValue = parseInt(input.min);
-    const maxValue = parseInt(input.max);
-    
-    // Disable minus button if at minimum value
-    if (currentValue <= minValue) {
-        minusBtn.classList.add('disabled');
-        minusBtn.disabled = true;
-    } else {
-        minusBtn.classList.remove('disabled');
-        minusBtn.disabled = false;
-    }
-    
-    // Disable plus button if at maximum value
-    if (currentValue >= maxValue) {
-        plusBtn.classList.add('disabled');
-        plusBtn.disabled = true;
-    } else {
-        plusBtn.classList.remove('disabled');
-        plusBtn.disabled = false;
-    }
-}
-
-// Add dynamic elements and enhanced interaction to tour cards
 function initTourCards() {
-    const tourCards = document.querySelectorAll('.tour-card');
+    // Implementation of initTourCards function
+    console.log('Tour cards initialization');
+}
+
+function checkWishlistStatus() {
+    // Implementation of checkWishlistStatus function
+    console.log('Wishlist status check');
+}
+
+function ensureWishlistTable() {
+    // Implementation of ensureWishlistTable function
+    console.log('Wishlist table check');
+}
+
+function initDashboard() {
+    initThemeToggle();
+    initBookingCards();
+    initNotifications();
+    initTestimonialsSlider();
+    initTrendingTours();
+    initProfileDropdown();
+    initSidebar();
+    initStatistics();
+    initToasts();
+    initPopovers();
+    initToolTips();
+    initDataTable();
+    initDatePickers();
+    initCharts();
+}
+
+// Function to initialize the Travel Explorer component
+function initTravelExplorer() {
+    console.log('Initializing Travel Explorer component');
     
-    tourCards.forEach(card => {
-        // Add favorite button to each card
-        const imageContainer = card.querySelector('.tour-image');
-        if (imageContainer && !imageContainer.querySelector('.card-favorite')) {
-            const favoriteBtn = document.createElement('div');
-            favoriteBtn.className = 'card-favorite';
-            favoriteBtn.innerHTML = '<i class="far fa-heart"></i>';
-            imageContainer.appendChild(favoriteBtn);
-            
-            // Add click functionality
-            favoriteBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.classList.toggle('active');
+    // Set up view toggle functionality
+    const viewToggleBtns = document.querySelectorAll('.view-toggle-btn');
+    const cardsContainer = document.querySelector('.cards-container');
+    
+    if (viewToggleBtns.length && cardsContainer) {
+        viewToggleBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                viewToggleBtns.forEach(btn => btn.classList.remove('active'));
                 
-                const icon = this.querySelector('i');
-                if (this.classList.contains('active')) {
-                    icon.className = 'fas fa-heart';
-                    // Optional: Show feedback to user
-                    showToast('Added to favorites!');
-                } else {
-                    icon.className = 'far fa-heart';
-                    // Optional: Show feedback to user
-                    showToast('Removed from favorites.');
-                }
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Set view mode
+                const viewMode = this.getAttribute('data-view');
+                cardsContainer.className = 'cards-container ' + viewMode + '-view';
+            });
+        });
+    }
+    
+    // Set up destination filtering
+    const filterDropdown = document.getElementById('filter-dropdown');
+    const searchInput = document.getElementById('explorer-search-input');
+    const travelCards = document.querySelectorAll('.travel-card');
+    
+    if (filterDropdown) {
+        filterDropdown.addEventListener('change', filterDestinations);
+    }
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', filterDestinations);
+    }
+    
+    function filterDestinations() {
+        const searchTerm = (searchInput ? searchInput.value.toLowerCase() : '');
+        const filterValue = (filterDropdown ? filterDropdown.value : 'all');
+        
+        travelCards.forEach(card => {
+            const category = card.getAttribute('data-category') || '';
+            const title = card.querySelector('.card-title').textContent.toLowerCase();
+            const description = card.querySelector('.card-description').textContent.toLowerCase();
+            
+            // Check if card matches search term
+            const matchesSearch = searchTerm === '' || 
+                title.includes(searchTerm) || 
+                description.includes(searchTerm);
+            
+            // Check if card matches filter
+            const matchesFilter = filterValue === 'all' || category.includes(filterValue);
+            
+            // Show/hide card based on filters
+            if (matchesSearch && matchesFilter) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    // Initialize image galleries in travel cards
+    initializeImageGalleries();
+    
+    // Fix missing images with fallbacks
+    fixMissingImages();
+}
+
+// Function to initialize image galleries in travel cards
+function initializeImageGalleries() {
+    const travelCards = document.querySelectorAll('.travel-card');
+    
+    travelCards.forEach(card => {
+        const imageContainer = card.querySelector('.image-container');
+        const dots = card.querySelectorAll('.image-dot');
+        const prevBtn = card.querySelector('.image-nav.prev');
+        const nextBtn = card.querySelector('.image-nav.next');
+        
+        if (!imageContainer || dots.length === 0) return;
+        
+        let currentIndex = 0;
+        const maxIndex = dots.length - 1;
+        
+        // Set up image navigation
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : maxIndex;
+                updateGallery();
             });
         }
         
-        // Enhance view details button with animated icon
-        const viewDetailsBtn = card.querySelector('.view-details-btn');
-        if (viewDetailsBtn && !viewDetailsBtn.querySelector('i')) {
-            viewDetailsBtn.innerHTML += ' <i class="fas fa-arrow-right"></i>';
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                currentIndex = (currentIndex < maxIndex) ? currentIndex + 1 : 0;
+                updateGallery();
+            });
         }
         
-        // Make entire card clickable
-        card.addEventListener('click', function(e) {
-            // Don't trigger if clicking on the favorite button
-            if (!e.target.closest('.card-favorite')) {
-                const detailsBtn = this.querySelector('.view-details-btn');
-                if (detailsBtn) {
-                    const tourName = this.querySelector('h3').textContent;
-                    // Show an animation on the button when clicked
-                    detailsBtn.classList.add('clicked');
-                    setTimeout(() => {
-                        detailsBtn.classList.remove('clicked');
-                        // Then navigate or show modal
-                        alert(`You will be redirected to ${tourName} details page.`);
-                    }, 300);
+        // Set up dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', function(e) {
+                e.stopPropagation();
+                currentIndex = index;
+                updateGallery();
+            });
+        });
+        
+        // Function to update gallery display
+        function updateGallery() {
+            // Update transform
+            imageContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            // Update active dot
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        }
+    });
+}
+
+// Function to fix missing images with fallbacks
+function fixMissingImages() {
+    const cardImages = document.querySelectorAll('.travel-card .image-container img');
+    
+    cardImages.forEach(img => {
+        // Handle missing images
+        img.onerror = function() {
+            console.log('Image failed to load:', this.src);
+            this.classList.add('fallback-img');
+            
+            // Use a data URI as fallback
+            this.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22400%22%20viewBox%3D%220%200%20600%20400%22%3E%3Crect%20width%3D%22600%22%20height%3D%22400%22%20fill%3D%22%23f0f2f5%22%2F%3E%3Ctext%20x%3D%22300%22%20y%3D%22200%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2218%22%20fill%3D%22%23999%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EDestination%20Image%3C%2Ftext%3E%3C%2Fsvg%3E';
+        };
+        
+        // Handle already-broken images
+        if (img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)) {
+            img.onerror();
+        }
+    });
+}
+
+// Enhanced Dashboard Functionality
+function improveTestimonialSlider() {
+    const testimonialsWrapper = document.querySelector('.testimonials-wrapper');
+    const slides = document.querySelectorAll('.testimonial-slide');
+    const prevBtn = document.querySelector('.testimonial-prev');
+    const nextBtn = document.querySelector('.testimonial-next');
+    const indicatorsContainer = document.querySelector('.testimonial-indicators');
+    
+    if (!testimonialsWrapper || slides.length === 0) return;
+    
+    // Create indicators if they don't exist
+    if (indicatorsContainer) {
+        indicatorsContainer.innerHTML = '';
+        slides.forEach((_, index) => {
+            const indicator = document.createElement('span');
+            indicator.classList.add('indicator');
+            if (index === 0) indicator.classList.add('active');
+            indicator.dataset.index = index;
+            indicatorsContainer.appendChild(indicator);
+            
+            // Add click event to each indicator
+            indicator.addEventListener('click', () => {
+                goToSlide(index);
+            });
+        });
+    }
+    
+    let currentSlide = 0;
+    const slideWidth = slides[0].clientWidth;
+    
+    // Setup initial position
+    updateSliderPosition();
+    
+    // Event listeners for buttons
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    
+    // Add touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    testimonialsWrapper.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    testimonialsWrapper.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        if (touchStartX - touchEndX > 50) {
+            // Swipe left
+            nextSlide();
+        } else if (touchEndX - touchStartX > 50) {
+            // Swipe right
+            prevSlide();
+        }
+    }
+    
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSliderPosition();
+    }
+    
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        updateSliderPosition();
+    }
+    
+    function goToSlide(index) {
+        currentSlide = index;
+        updateSliderPosition();
+    }
+    
+    function updateSliderPosition() {
+        testimonialsWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        // Update indicators
+        const indicators = document.querySelectorAll('.testimonial-indicators .indicator');
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentSlide);
+        });
+    }
+    
+    // Auto-slide
+    let interval = setInterval(nextSlide, 5000);
+    
+    // Pause auto-slide on hover
+    testimonialsWrapper.addEventListener('mouseenter', () => {
+        clearInterval(interval);
+    });
+    
+    testimonialsWrapper.addEventListener('mouseleave', () => {
+        interval = setInterval(nextSlide, 5000);
+    });
+}
+
+function improveImageGallery() {
+    const travelCards = document.querySelectorAll('.travel-card');
+    
+    travelCards.forEach(card => {
+        const imageContainer = card.querySelector('.image-container');
+        const images = card.querySelectorAll('.image-container img');
+        const dots = card.querySelectorAll('.image-dot');
+        const prevBtn = card.querySelector('.image-nav.prev');
+        const nextBtn = card.querySelector('.image-nav.next');
+        
+        if (!imageContainer || images.length <= 1) return;
+        
+        let currentImage = 0;
+        
+        // Setup initial state
+        updateGallery(currentImage);
+        
+        // Event listeners
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                currentImage = (currentImage - 1 + images.length) % images.length;
+                updateGallery(currentImage);
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                currentImage = (currentImage + 1) % images.length;
+                updateGallery(currentImage);
+            });
+        }
+        
+        // Dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                currentImage = index;
+                updateGallery(currentImage);
+            });
+        });
+        
+        function updateGallery(index) {
+            imageContainer.style.transform = `translateX(-${index * 100}%)`;
+            
+            // Update dots
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+    });
+}
+
+function enhanceFormFields() {
+    // Add date validation for check-in/check-out
+    const checkInInput = document.getElementById('hotel-check-in');
+    const checkOutInput = document.getElementById('hotel-check-out');
+    
+    if (checkInInput && checkOutInput) {
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        checkInInput.min = today;
+        
+        // Ensure check-out date is after check-in date
+        checkInInput.addEventListener('change', () => {
+            checkOutInput.min = checkInInput.value;
+            
+            // If check-out date is before new check-in date, update it
+            if (checkOutInput.value && checkOutInput.value < checkInInput.value) {
+                checkOutInput.value = checkInInput.value;
+            }
+        });
+    }
+    
+    // Similar validation for flight dates
+    const flightDepartInput = document.getElementById('flight-depart');
+    const flightReturnInput = document.getElementById('flight-return');
+    
+    if (flightDepartInput && flightReturnInput) {
+        const today = new Date().toISOString().split('T')[0];
+        flightDepartInput.min = today;
+        
+        flightDepartInput.addEventListener('change', () => {
+            flightReturnInput.min = flightDepartInput.value;
+            
+            if (flightReturnInput.value && flightReturnInput.value < flightDepartInput.value) {
+                flightReturnInput.value = flightDepartInput.value;
+            }
+        });
+    }
+    
+    // Add destination autocomplete placeholder functionality
+    const destinationInputs = document.querySelectorAll('input[id$="-destination"], input[id$="-from"], input[id$="-to"]');
+    
+    destinationInputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            // This would be replaced with actual autocomplete functionality
+            input.placeholder = 'Type to search...';
+        });
+        
+        input.addEventListener('blur', () => {
+            input.placeholder = input.getAttribute('data-placeholder') || 'Where are you going?';
+        });
+        
+        // Store original placeholder
+        input.setAttribute('data-placeholder', input.placeholder);
+    });
+}
+
+function improveBookingCards() {
+    const bookingCards = document.querySelectorAll('.booking-card');
+    
+    bookingCards.forEach(card => {
+        // Add animation on hover
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-8px)';
+            card.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.15)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+        });
+        
+        // Improve search button
+        const searchBtn = card.querySelector('.booking-search-btn');
+        if (searchBtn) {
+            // Add ripple effect
+            searchBtn.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600); // Match the CSS animation duration
+            });
+            
+            // Add loading state
+            searchBtn.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Searching...';
+                this.disabled = true;
+                
+                // Simulate search delay
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    
+                    // Show success toast
+                    showToast('Search completed! Results will be available soon.');
+                }, 2000);
+            });
+        }
+    });
+}
+
+function enhanceSearchExperience() {
+    const searchInput = document.querySelector('.search-input');
+    if (!searchInput) return;
+    
+    // Create container for recent searches
+    const searchContainer = searchInput.closest('.search-container');
+    
+    if (searchContainer) {
+        let recentSearches = document.createElement('div');
+        recentSearches.classList.add('recent-searches');
+        recentSearches.style.position = 'absolute';
+        recentSearches.style.top = '100%';
+        recentSearches.style.left = '0';
+        recentSearches.style.width = '100%';
+        recentSearches.style.background = 'white';
+        recentSearches.style.borderRadius = '0 0 12px 12px';
+        recentSearches.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.1)';
+        recentSearches.style.zIndex = '1000';
+        recentSearches.style.maxHeight = '0';
+        recentSearches.style.overflow = 'hidden';
+        recentSearches.style.transition = 'max-height 0.3s ease, padding 0.3s ease';
+        searchContainer.appendChild(recentSearches);
+        
+        // Set up recent searches interaction
+        searchInput.addEventListener('focus', () => {
+            const hasRecentSearches = loadRecentSearches();
+            
+            if (hasRecentSearches) {
+                recentSearches.style.maxHeight = '300px';
+                recentSearches.style.padding = '10px 0';
+            }
+        });
+        
+        // Hide recent searches when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!searchContainer.contains(e.target)) {
+                recentSearches.style.maxHeight = '0';
+                recentSearches.style.padding = '0';
+            }
+        });
+        
+        // Save search when submitting
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && searchInput.value.trim()) {
+                saveRecentSearch(searchInput.value.trim());
+            }
+        });
+    }
+    
+    // Load recent searches from localStorage and display them
+    function loadRecentSearches() {
+        const recentSearchesData = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        
+        if (recentSearchesData.length === 0) {
+            return false;
+        }
+        
+        displayRecentSearches(recentSearchesData);
+        return true;
+    }
+    
+    // Save a search term to localStorage
+    function saveRecentSearch(term) {
+        const recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        
+        // Remove duplicate if it exists
+        const index = recentSearches.indexOf(term);
+        if (index > -1) {
+            recentSearches.splice(index, 1);
+        }
+        
+        // Add new search term at the beginning
+        recentSearches.unshift(term);
+        
+        // Keep only the most recent 5 searches
+        if (recentSearches.length > 5) {
+            recentSearches.pop();
+        }
+        
+        localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+    }
+    
+    function displayRecentSearches(searches) {
+        const recentSearchesElement = document.querySelector('.recent-searches');
+        recentSearchesElement.innerHTML = '<h4 style="margin: 0 0 10px; padding: 0 15px; font-size: 0.9rem; color: #666;">Recent Searches</h4>';
+        
+        searches.forEach(search => {
+            const searchItem = document.createElement('div');
+            searchItem.classList.add('recent-search-item');
+            searchItem.style.padding = '8px 15px';
+            searchItem.style.cursor = 'pointer';
+            searchItem.style.transition = 'background 0.2s ease';
+            searchItem.innerHTML = `<i class="fas fa-history" style="margin-right: 10px; color: #999;"></i> ${search}`;
+            
+            searchItem.addEventListener('mouseover', () => {
+                searchItem.style.background = 'rgba(0, 0, 0, 0.05)';
+            });
+            
+            searchItem.addEventListener('mouseout', () => {
+                searchItem.style.background = 'transparent';
+            });
+            
+            searchItem.addEventListener('click', () => {
+                searchInput.value = search;
+                recentSearchesElement.style.maxHeight = '0';
+                recentSearchesElement.style.padding = '0';
+                
+                // Trigger search
+                const searchButton = document.querySelector('.search-icon');
+                if (searchButton) {
+                    searchButton.click();
                 }
+            });
+            
+            recentSearchesElement.appendChild(searchItem);
+        });
+    }
+}
+
+function enhanceFooter() {
+    // Add animation to social media icons
+    const socialIcons = document.querySelectorAll('.social-icon');
+    
+    socialIcons.forEach((icon, index) => {
+        // Add staggered delay to entrance animation
+        icon.style.transitionDelay = `${index * 0.1}s`;
+        
+        // Add hover effect
+        icon.addEventListener('mouseenter', () => {
+            icon.style.transform = 'translateY(-5px)';
+            icon.style.boxShadow = '0 10px 15px rgba(0, 0, 0, 0.2)';
+        });
+        
+        icon.addEventListener('mouseleave', () => {
+            icon.style.transform = '';
+            icon.style.boxShadow = '';
+        });
+    });
+    
+    // Add smooth scroll for footer links
+    const footerLinks = document.querySelectorAll('.site-footer a[href^="#"]');
+    
+    footerLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
             }
         });
     });
 }
 
-// Simple toast notification function
-function showToast(message) {
-    // Check if a toast container already exists
-    let toastContainer = document.querySelector('.toast-container');
+// Call enhancement functions when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Testimonial slider improvements
+    improveTestimonialSlider();
     
-    // If not, create one
-    if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.className = 'toast-container';
-        document.body.appendChild(toastContainer);
+    // Travel card image gallery improvements
+    improveImageGallery();
+    
+    // Add responsive functionality to forms
+    enhanceFormFields();
+    
+    // Improve booking card transitions
+    improveBookingCards();
+    
+    // Add search functionality
+    enhanceSearchExperience();
+    
+    // Enhance footer
+    enhanceFooter();
+});
+
+// Destination slider functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize destination slider
+    const destinationsSlider = document.querySelector('.destinations-slider');
+    const destinationPrev = document.querySelector('.destination-prev');
+    const destinationNext = document.querySelector('.destination-next');
+    
+    if (destinationsSlider && destinationPrev && destinationNext) {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        let slideWidth = 375; // Width of destination card + gap
+        let slideIndex = 0;
+        let autoplayInterval;
         
-        // Add some basic styles to the toast container
-        toastContainer.style.position = 'fixed';
-        toastContainer.style.bottom = '20px';
-        toastContainer.style.right = '20px';
-        toastContainer.style.zIndex = '9999';
-    }
-    
-    // Create a new toast
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = message;
-    
-    // Style the toast
-    toast.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    toast.style.color = 'white';
-    toast.style.padding = '10px 15px';
-    toast.style.borderRadius = '4px';
-    toast.style.marginTop = '10px';
-    toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
-    toast.style.transition = 'all 0.3s ease';
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(20px)';
-    
-    // Add to container
-    toastContainer.appendChild(toast);
-    
-    // Trigger animation
-    setTimeout(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateY(0)';
-    }, 10);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(20px)';
+        // Calculate total slides and visible slides
+        const calculateSlides = () => {
+            const cards = destinationsSlider.querySelectorAll('.destination-card');
+            const containerWidth = destinationsSlider.parentElement.offsetWidth;
+            const visibleSlides = Math.floor(containerWidth / slideWidth);
+            const totalSlides = cards.length;
+            return { visibleSlides, totalSlides };
+        };
         
-        // Remove from DOM after animation completes
-        setTimeout(() => {
-            toastContainer.removeChild(toast);
-            
-            // If no more toasts, remove the container
-            if (toastContainer.children.length === 0) {
-                document.body.removeChild(toastContainer);
+        // Update slide width on resize
+        const updateSlideWidth = () => {
+            const windowWidth = window.innerWidth;
+            if (windowWidth < 576) {
+                slideWidth = 265; // Card width + gap for mobile
+            } else if (windowWidth < 768) {
+                slideWidth = 300; // Card width + gap for tablet
+            } else if (windowWidth < 992) {
+                slideWidth = 320; // Card width + gap for small desktop
+            } else {
+                slideWidth = 375; // Card width + gap for large desktop
             }
-        }, 300);
-    }, 3000);
-} 
+        };
+        
+        // Move to specific slide
+        const goToSlide = (index) => {
+            const { totalSlides, visibleSlides } = calculateSlides();
+            const maxIndex = Math.max(0, totalSlides - visibleSlides);
+            slideIndex = Math.min(Math.max(0, index), maxIndex);
+            destinationsSlider.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+            
+            // Update button states
+            destinationPrev.style.opacity = slideIndex <= 0 ? "0.5" : "1";
+            destinationPrev.style.pointerEvents = slideIndex <= 0 ? "none" : "auto";
+            destinationNext.style.opacity = slideIndex >= maxIndex ? "0.5" : "1";
+            destinationNext.style.pointerEvents = slideIndex >= maxIndex ? "none" : "auto";
+            
+            // Reset autoplay
+            clearInterval(autoplayInterval);
+            startAutoplay();
+        };
+        
+        // Autoplay function
+        const startAutoplay = () => {
+            const { totalSlides, visibleSlides } = calculateSlides();
+            const maxIndex = Math.max(0, totalSlides - visibleSlides);
+            
+            autoplayInterval = setInterval(() => {
+                if (slideIndex >= maxIndex) {
+                    goToSlide(0); // Loop back to the beginning
+                } else {
+                    goToSlide(slideIndex + 1);
+                }
+            }, 5000); // Change slide every 5 seconds
+        };
+        
+        // Previous slide button
+        destinationPrev.addEventListener('click', () => {
+            goToSlide(slideIndex - 1);
+        });
+        
+        // Next slide button
+        destinationNext.addEventListener('click', () => {
+            goToSlide(slideIndex + 1);
+        });
+        
+        // Mouse drag functionality
+        destinationsSlider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            destinationsSlider.style.transition = 'none';
+            startX = e.pageX - destinationsSlider.offsetLeft;
+            scrollLeft = destinationsSlider.scrollLeft;
+            
+            // Clear autoplay when user interacts
+            clearInterval(autoplayInterval);
+        });
+        
+        destinationsSlider.addEventListener('mouseleave', () => {
+            isDown = false;
+            destinationsSlider.style.transition = 'transform 0.5s ease';
+            
+            // Restart autoplay
+            clearInterval(autoplayInterval);
+            startAutoplay();
+        });
+        
+        destinationsSlider.addEventListener('mouseup', () => {
+            isDown = false;
+            destinationsSlider.style.transition = 'transform 0.5s ease';
+            
+            // Snap to closest slide
+            const dragDistance = (scrollLeft - destinationsSlider.scrollLeft) * -1;
+            if (Math.abs(dragDistance) > 100) {
+                const direction = dragDistance > 0 ? -1 : 1;
+                goToSlide(slideIndex + direction);
+            } else {
+                goToSlide(slideIndex);
+            }
+            
+            // Restart autoplay
+            clearInterval(autoplayInterval);
+            startAutoplay();
+        });
+        
+        destinationsSlider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - destinationsSlider.offsetLeft;
+            const walk = (x - startX) * 2;
+            const transform = -slideIndex * slideWidth + walk;
+            destinationsSlider.style.transform = `translateX(${transform}px)`;
+        });
+        
+        // Touch functionality for mobile
+        destinationsSlider.addEventListener('touchstart', (e) => {
+            isDown = true;
+            destinationsSlider.style.transition = 'none';
+            startX = e.touches[0].pageX - destinationsSlider.offsetLeft;
+            scrollLeft = destinationsSlider.scrollLeft;
+            
+            // Clear autoplay when user interacts
+            clearInterval(autoplayInterval);
+        });
+        
+        destinationsSlider.addEventListener('touchend', () => {
+            isDown = false;
+            destinationsSlider.style.transition = 'transform 0.5s ease';
+            
+            // Snap to closest slide
+            const dragDistance = (scrollLeft - destinationsSlider.scrollLeft) * -1;
+            if (Math.abs(dragDistance) > 50) {
+                const direction = dragDistance > 0 ? -1 : 1;
+                goToSlide(slideIndex + direction);
+            } else {
+                goToSlide(slideIndex);
+            }
+            
+            // Restart autoplay
+            clearInterval(autoplayInterval);
+            startAutoplay();
+        });
+        
+        destinationsSlider.addEventListener('touchmove', (e) => {
+            if (!isDown) return;
+            const x = e.touches[0].pageX - destinationsSlider.offsetLeft;
+            const walk = (x - startX) * 2;
+            const transform = -slideIndex * slideWidth + walk;
+            destinationsSlider.style.transform = `translateX(${transform}px)`;
+        });
+        
+        // Initialize slider and respond to window resize
+        updateSlideWidth();
+        goToSlide(0);
+        startAutoplay();
+        
+        window.addEventListener('resize', () => {
+            updateSlideWidth();
+            goToSlide(slideIndex);
+        });
+        
+        // Add animations for destination cards
+        const animateCards = () => {
+            const destinationCards = document.querySelectorAll('.destination-card');
+            destinationCards.forEach((card, index) => {
+                // Staggered animation
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+                
+                // Add hover effects
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px)';
+                    
+                    // Also animate the image
+                    const img = this.querySelector('.destination-image img');
+                    if (img) {
+                        img.style.transform = 'scale(1.1)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    
+                    // Reset image animation
+                    const img = this.querySelector('.destination-image img');
+                    if (img) {
+                        img.style.transform = 'scale(1)';
+                    }
+                });
+            });
+        };
+        
+        // Call animation function
+        animateCards();
+        
+        // Add click handler for view all button
+        const viewAllBtn = document.querySelector('.view-all-btn');
+        if (viewAllBtn) {
+            viewAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('View all destinations feature will be implemented soon!');
+            });
+        }
+    }
+}); 

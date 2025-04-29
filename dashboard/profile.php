@@ -194,10 +194,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span>My Profile</span>
                     <div class="welcome-subtitle">Update your personal information and manage your account</div>
                 </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search destinations...">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
             </div>
             
             <div class="dashboard-content">
