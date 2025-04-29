@@ -2368,32 +2368,94 @@ body.dark-theme .card-footer {
 
 .number-input {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    padding: 2px 5px;
 }
 
 .number-input .minus-btn,
 .number-input .plus-btn {
     background: #f0f2f5;
     border: none;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
+    color: #333;
+    flex-shrink: 0;
 }
 
 .number-input .minus-btn:hover,
 .number-input .plus-btn:hover {
     background: #e0e2e5;
+    color: #007bff;
 }
 
 .number-input input {
     text-align: center;
-    width: 50px;
+    width: calc(100% - 60px);
     border: none;
     background: transparent;
+    font-size: 0.95rem;
+    padding: 5px;
+    color: #333;
+    margin: 0 5px;
+    appearance: textfield;
+    -moz-appearance: textfield; /* Firefox */
+}
+
+/* Remove arrows from number input */
+.number-input input::-webkit-outer-spin-button,
+.number-input input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Form row improvements */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 15px;
+}
+
+/* Ensure forms work well on mobile */
+@media (max-width: 576px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+/* Dark theme for number inputs */
+body.dark-theme .number-input {
+    background-color: #2a2a2a;
+    border-color: #444;
+}
+
+body.dark-theme .number-input .minus-btn,
+body.dark-theme .number-input .plus-btn {
+    background: #333;
+    color: #ddd;
+}
+
+body.dark-theme .number-input .minus-btn:hover,
+body.dark-theme .number-input .plus-btn:hover {
+    background: #444;
+    color: #007bff;
+}
+
+body.dark-theme .number-input input {
+    color: #e0e0e0;
 }
 
 /* Testimonial Card Enhancements */
@@ -2824,4 +2886,17 @@ body.dark-theme .slider-btn:hover {
     .view-btn {
         width: 100%;
     }
+}
+
+/* Also fix the testimonials slider with Safari compatibility */
+.testimonials-slider {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 3rem;
+    margin: 2rem 0;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
