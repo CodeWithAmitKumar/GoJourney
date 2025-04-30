@@ -1,6 +1,26 @@
 <?php
 session_start();
+
+// Always destroy any existing admin session when accessing login page
+if(isset($_SESSION['admin_logged_in'])) {
+    // Unset all session variables
+    $_SESSION = array();
+    
+    // If it's desired to kill the session, also delete the session cookie
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
+    
+    // Finally, destroy the session
+    session_destroy();
+}
+
 require_once '../connection/db_connect.php';
+require_once 'config.php'; // Include the config file with admin credentials
 
 // If already logged in as admin, redirect to admin dashboard
 if(isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
@@ -14,8 +34,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = $_POST['password'];
     
+    // For debugging - check input vs expected
+    $input_info = "Input: Email='$email', Password='$password'";
+    $expected_info = "Expected: Email='" . ADMIN_EMAIL . "', Password='" . ADMIN_PASSWORD . "'";
+    $comparison = "Comparison: " . ($email === ADMIN_EMAIL ? "Email matches" : "Email doesn't match") . 
+                  ", " . ($password === ADMIN_PASSWORD ? "Password matches" : "Password doesn't match");
+    error_log($input_info);
+    error_log($expected_info);
+    error_log($comparison);
+    
     // Check for admin credentials
-    if ($email === "gojourneyamitk@admin.com" && $password === "Akpatra#@1234") {
+    if ($email === ADMIN_EMAIL && $password === ADMIN_PASSWORD) {
         // Set admin session
         $_SESSION['admin_logged_in'] = true;
         $_SESSION['admin_email'] = $email;
@@ -27,6 +56,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     } else {
         $error_message = "Invalid email or password!";
+        // More specific error for debugging
+        if ($email !== ADMIN_EMAIL) {
+            error_log("Login failed: Email mismatch");
+        }
+        if ($password !== ADMIN_PASSWORD) {
+            error_log("Login failed: Password mismatch");
+        }
     }
 }
 ?>
@@ -144,6 +180,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-weight: bold;
         }
         
+        .success-message {
+            color: #5cb85c;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: rgba(92, 184, 92, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #5cb85c;
+        }
+        
         .back-to-site {
             margin-top: 20px;
             color: #666;
@@ -168,6 +215,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if ($error_message): ?>
             <div class="error-message">
                 <i class="fas fa-exclamation-circle"></i> <?php echo $error_message; ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['logout_message'])): ?>
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i> <?php echo $_SESSION['logout_message']; unset($_SESSION['logout_message']); ?>
             </div>
         <?php endif; ?>
         

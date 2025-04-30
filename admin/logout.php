@@ -1,14 +1,23 @@
 <?php
 session_start();
 
-// Unset all admin session variables
-unset($_SESSION['admin_logged_in']);
-unset($_SESSION['admin_email']);
-unset($_SESSION['admin_id']);
-unset($_SESSION['admin_name']);
+// Unset all session variables
+$_SESSION = array();
+
+// If it's desired to kill the session, also delete the session cookie
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
+}
 
 // Destroy the session
 session_destroy();
+
+// Add a logout message
+$_SESSION['logout_message'] = "You have been successfully logged out.";
 
 // Redirect to admin login page
 header("Location: index.php");

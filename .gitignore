@@ -1,0 +1,21 @@
+# Credentials and environment files
+admin/config.php
+
+# Dependency directories
+vendor/
+node_modules/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db 
