@@ -811,7 +811,7 @@ $passengers = isset($_GET['passengers']) ? $_GET['passengers'] : 1;
             
             <!-- Search results container -->
             <div id="results-container" class="results-container">
-                <div class="results-loading">
+                <div id="loading-spinner" class="results-loading">
                     <div class="spinner"></div>
                     <p>Searching for trains from <?php echo htmlspecialchars($fromStation); ?> to <?php echo htmlspecialchars($toStation); ?>...</p>
                 </div>
@@ -927,346 +927,301 @@ $passengers = isset($_GET['passengers']) ? $_GET['passengers'] : 1;
     <script src="js/result_animations.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Fetch train results
-            fetchTrainResults();
-            
-            // Modal functionality for modifying search
-            const modifySearchBtn = document.querySelector('.modify-search-btn');
-            const modifySearchModal = document.getElementById('modify-search-modal');
-            const closeModalBtn = modifySearchModal.querySelector('.close-modal');
-            
-            modifySearchBtn.addEventListener('click', function() {
-                modifySearchModal.classList.add('show');
-            });
-            
-            closeModalBtn.addEventListener('click', function() {
-                modifySearchModal.classList.remove('show');
-            });
-            
-            window.addEventListener('click', function(e) {
-                if (e.target === modifySearchModal) {
-                    modifySearchModal.classList.remove('show');
-                }
-            });
-            
-            // Set minimum date for date inputs
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').setAttribute('min', today);
-            
-            // Filter functionality
-            const filterCheckboxes = document.querySelectorAll('.filter-checkbox input');
-            filterCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    console.log('Filter changed:', this.parentElement.textContent.trim());
-                    filterResults();
-                });
-            });
-        });
-        
-        function filterResults() {
-            const resultCards = document.querySelectorAll('.train-result-card');
-            // Implement actual filtering logic here
-            
-            // For demonstration, add a filtered animation
-            resultCards.forEach(card => {
-                card.classList.add('filtered-animation');
-                setTimeout(() => {
-                    card.classList.remove('filtered-animation');
-                }, 1000);
-            });
-        }
-        
-        function fetchTrainResults() {
-            // Get search parameters from URL
+            // Extract search parameters from URL
             const urlParams = new URLSearchParams(window.location.search);
-            const fromStation = urlParams.get('from');
-            const toStation = urlParams.get('to');
-            const travelDate = urlParams.get('date');
-            const travelClass = urlParams.get('class');
-            const passengers = urlParams.get('passengers');
+            const from = urlParams.get('from');
+            const to = urlParams.get('to');
+            const depart = urlParams.get('date');
+            const trainClass = urlParams.get('class') || '';
+            const adults = urlParams.get('passengers') || 1;
             
-            // Create form data for the API request
+            console.log('Search parameters:', { from, to, depart, trainClass, adults });
+            
+            // Check if loading-spinner element exists
+            const loadingSpinner = document.getElementById('loading-spinner');
+            if (!loadingSpinner) {
+                console.error('Loading spinner element not found!');
+            } else {
+                // Show the spinner while loading
+                loadingSpinner.style.display = 'flex';
+            }
+            
+            // Make AJAX call to get real-time train data
             const formData = new FormData();
-            formData.append('from', fromStation);
-            formData.append('to', toStation);
-            formData.append('date', travelDate);
-            if (travelClass) formData.append('class', travelClass);
-            if (passengers) formData.append('passengers', passengers);
+            formData.append('from', from);
+            formData.append('to', to);
+            formData.append('depart', depart);
+            formData.append('date', depart); // Add date parameter for compatibility
+            formData.append('class', trainClass);
+            formData.append('passengers', adults);
             
-            // Show enhanced loading animation
-            document.querySelector('.results-loading').innerHTML = `
-                <div class="spinner"></div>
-                <p class="animate__animated animate__fadeIn">Searching for the best trains from ${fromStation} to ${toStation}...</p>
-                <div class="loading-tips animate__animated animate__fadeIn animate__delay-1s">
-                    <p><i class="fas fa-lightbulb"></i> Tip: Book your tickets in advance for better availability</p>
+            console.log('Sending search request with parameters:', {
+                from, to, depart, trainClass, adults
+            });
+            
+            // Show debugging message in UI for transparency
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = `
+                <div class="loading-results">
+                    <div class="spinner"></div>
+                    <p>Searching for trains from ${from} to ${to} on ${depart}...</p>
+                    <p><small>If results don't appear, please check console for errors</small></p>
                 </div>
             `;
             
-            // Make API request
-            fetch('api/train_search.php', {
+            // For direct debugging, make a test call to see if the API endpoint is reachable
+            fetch('../dashboard/api/train_search.php', {
+                method: 'HEAD'
+            })
+            .then(response => {
+                console.log('API endpoint reachable:', response.ok, 'Status:', response.status);
+            })
+            .catch(error => {
+                console.error('API endpoint not reachable:', error);
+            });
+            
+            // Main API call
+            fetch('../dashboard/api/train_search.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
+                console.log('Response status:', response.status);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Hide loading indicator
-                document.querySelector('.results-loading').style.display = 'none';
-                
-                // Display results
-                displayTrainResults(data);
-            })
-            .catch(error => {
-                console.error('Error fetching train results:', error);
-                document.querySelector('.results-loading').style.display = 'none';
-                document.getElementById('results-container').innerHTML = `
-                    <div class="error-message animate__animated animate__fadeIn">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Sorry, we couldn't fetch the train results</h3>
-                        <p>There seems to be a connection issue with our train search service.</p>
-                        <button class="retry-btn" onclick="fetchTrainResults()">
-                            <i class="fas fa-redo"></i> Retry Search
-                        </button>
-                    </div>
-                `;
-            });
-        }
-        
-        function displayTrainResults(data) {
-            const resultsContainer = document.getElementById('results-container');
-            
-            if (!data.trains || data.trains.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-train"></i>
-                        <h3>No trains found for this route</h3>
-                        <p>Please try different dates or stations.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = `
-                <div class="results-header">
-                    <h3><i class="fas fa-train"></i> Available Trains</h3>
-                    <div class="results-count">${data.count} trains found</div>
-                </div>
-                <div class="results-list">
-            `;
-            
-            data.trains.forEach(train => {
-                // Get price for selected class or first available class
-                const urlParams = new URLSearchParams(window.location.search);
-                const selectedClass = urlParams.get('class') || Object.keys(train.price)[0];
-                const price = train.price[selectedClass] || Object.values(train.price)[0];
-                
-                // Format date
-                let formattedDate;
-                try {
-                    const date = new Date(train.date);
-                    const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
-                    formattedDate = date.toLocaleDateString('en-IN', options);
-                } catch (e) {
-                    formattedDate = train.date;
+                    throw new Error('Network response was not ok: ' + response.status);
                 }
                 
-                // Convert availability to appropriate CSS class
-                const availabilityClass = train.availability.toLowerCase().replace(/\s+/g, '-');
-                
-                html += `
-                    <div class="result-card">
-                        <div class="result-header">
-                            <div class="train-name">${train.train_name}</div>
-                            <div class="train-number">${train.train_number}</div>
-                        </div>
-                        <div class="result-details">
-                            <div class="journey-times">
-                                <div class="departure">
-                                    <div class="time">${train.departure_time}</div>
-                                    <div class="station">${train.from_station}</div>
-                                </div>
-                                <div class="journey-duration">
-                                    <div class="duration-line"></div>
-                                    <div class="duration-time">${train.duration}</div>
-                                    <div class="duration-line"></div>
-                                </div>
-                                <div class="arrival">
-                                    <div class="time">${train.arrival_time}</div>
-                                    <div class="station">${train.to_station}</div>
-                                </div>
-                            </div>
-                            <div class="journey-date">
-                                <div class="date-label">Date</div>
-                                <div class="date-value">${formattedDate}</div>
-                            </div>
-                            <div class="price-availability">
-                                <div class="price">₹${price}</div>
-                                <div class="availability ${availabilityClass}">${train.availability}</div>
-                            </div>
-                            <div class="booking-action">
-                                <button class="book-now-btn" data-train="${train.train_number}" data-class="${selectedClass}">Book Now</button>
-                            </div>
-                        </div>
-                        <div class="result-footer">
-                            <button class="show-details-btn" data-toggle="train-details-${train.train_number}">
-                                <span class="show-text">Show Details</span>
-                                <span class="hide-text">Hide Details</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="additional-details" id="train-details-${train.train_number}">
-                                <div class="details-section">
-                                    <h4>Available Classes</h4>
-                                    <div class="class-options">
-                                        ${Object.entries(train.price).map(([cls, price]) => `
-                                            <div class="class-option ${cls === selectedClass ? 'selected' : ''}">
-                                                <div class="class-name">${getClassFullName(cls)}</div>
-                                                <div class="class-price">₹${price}</div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                <div class="details-section">
-                                    <h4>Amenities</h4>
-                                    <div class="amenities-list">
-                                        <span class="amenity"><i class="fas fa-wifi"></i> WiFi</span>
-                                        <span class="amenity"><i class="fas fa-utensils"></i> Food</span>
-                                        <span class="amenity"><i class="fas fa-charging-station"></i> Charging</span>
-                                        <span class="amenity"><i class="fas fa-bed"></i> Bedding</span>
-                                        <span class="amenity"><i class="fas fa-restroom"></i> Clean Toilets</span>
-                                        <span class="amenity"><i class="fas fa-fire-extinguisher"></i> Safety Features</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += `</div>`;
-            resultsContainer.innerHTML = html;
-            
-            // Add event listeners to show/hide details buttons
-            const detailButtons = resultsContainer.querySelectorAll('.show-details-btn');
-            detailButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const detailsId = this.getAttribute('data-toggle');
-                    const detailsSection = document.getElementById(detailsId);
-                    
-                    if (detailsSection.style.display === 'block') {
-                        detailsSection.style.display = 'none';
-                        this.classList.remove('active');
-                    } else {
-                        detailsSection.style.display = 'block';
-                        this.classList.add('active');
+                // Get the raw response text for debugging
+                return response.text().then(text => {
+                    console.log('Raw response:', text.substring(0, 500) + '...');
+                    try {
+                        // Try to parse as JSON
+                        const data = JSON.parse(text);
+                        return data;
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        console.error('Response was not valid JSON:', text);
+                        throw new Error('Failed to parse JSON response');
                     }
                 });
-            });
-            
-            // Add event listeners to book buttons
-            const bookButtons = resultsContainer.querySelectorAll('.book-now-btn');
-            bookButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const trainNumber = this.getAttribute('data-train');
-                    const travelClass = this.getAttribute('data-class');
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                
+                // Hide the spinner after data is loaded
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'none';
+                }
+                
+                if (data.error) {
+                    console.error('Error fetching train data:', data.error);
+                    document.getElementById('results-container').innerHTML = `
+                        <div class="alert alert-danger">
+                            <p>Sorry, we couldn't find any trains for your search. Please try different dates or locations.</p>
+                            <p>Error: ${data.error}</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (!data.trains || data.count === 0) {
+                    console.log('No trains found');
+                    document.getElementById('results-container').innerHTML = `
+                        <div class="alert alert-info">
+                            <p>No trains found for this route on the selected date. Please try different dates or locations.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Generate HTML for each train
+                const trainsHTML = data.trains.map(train => {
+                    console.log('Processing train:', train);
                     
-                    showBookingModal('train', trainNumber, travelClass);
+                    // Format prices for different classes
+                    const prices = train.price;
+                    
+                    // Determine status and corresponding class
+                    let statusClass = 'text-success';
+                    if (train.status && train.status.toLowerCase().includes('delay')) {
+                        statusClass = 'text-warning';
+                    } else if (train.status && train.status.toLowerCase().includes('cancel')) {
+                        statusClass = 'text-danger';
+                    }
+                    
+                    // Create HTML for each available class
+                    const classesHTML = train.class_types.map(classType => {
+                        const price = prices[classType];
+                        const seatsAvailable = train.seats_available[classType];
+                        
+                        let availabilityClass = 'text-success';
+                        let availabilityText = 'Available';
+                        
+                        if (seatsAvailable <= 0) {
+                            availabilityClass = 'text-danger';
+                            availabilityText = 'Sold Out';
+                        } else if (seatsAvailable <= 10) {
+                            availabilityClass = 'text-warning';
+                            availabilityText = 'Few Seats Left';
+                        }
+                        
+                        const formattedPrice = new Intl.NumberFormat('en-IN', {
+                            style: 'currency',
+                            currency: 'INR',
+                            maximumFractionDigits: 0
+                        }).format(price);
+                        
+                        return `
+                        <div class="col-md-3 mb-2">
+                            <div class="card class-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${classType}</h5>
+                                    <p class="card-text price">${formattedPrice}</p>
+                                    <p class="card-text ${availabilityClass}">
+                                        ${availabilityText} (${seatsAvailable})
+                                    </p>
+                                    <button class="btn btn-primary btn-sm book-btn" 
+                                        data-train-id="${train.train_number}" 
+                                        data-class="${classType}" 
+                                        ${seatsAvailable <= 0 ? 'disabled' : ''}>
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                    
+                    return `
+                    <div class="card mb-4 train-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">${train.train_name}</h5>
+                                <small class="text-muted">${train.train_number} • ${train.train_type}</small>
+                            </div>
+                            <span class="badge ${statusClass.includes('success') ? 'bg-success' : 
+                                              statusClass.includes('warning') ? 'bg-warning' : 'bg-danger'}">
+                                ${train.status}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="departure">
+                                        <div class="time fw-bold fs-4">${train.departure_time}</div>
+                                        <div class="station">${train.from_station} (${train.from_station_code})</div>
+                                        <div class="date">${train.date}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="duration text-muted mb-2">
+                                        <i class="fas fa-clock me-1"></i> ${train.duration}
+                                    </div>
+                                    <div class="journey-line">
+                                        <hr>
+                                        <i class="fas fa-train"></i>
+                                    </div>
+                                    <div class="distance text-muted mt-2">
+                                        <i class="fas fa-route me-1"></i> ${train.distance}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="arrival">
+                                        <div class="time fw-bold fs-4">${train.arrival_time}</div>
+                                        <div class="station">${train.to_station} (${train.to_station_code})</div>
+                                        <div class="date">${train.date}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="runs-on mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-alt me-1"></i> Runs on: ${train.days_of_run}
+                                </small>
+                            </div>
+                            <hr>
+                            <h6 class="mb-3">Available Classes & Pricing</h6>
+                            <div class="row">
+                                ${classesHTML}
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                console.log('Generated HTML for', data.trains.length, 'trains');
+                
+                // Update the results container
+                document.getElementById('results-container').innerHTML = trainsHTML;
+                console.log('Updated results container with trains HTML');
+                
+                // Add event listeners to all book buttons
+                document.querySelectorAll('.book-btn').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        const trainId = this.getAttribute('data-train-id');
+                        const trainClass = this.getAttribute('data-class');
+                        // Redirect to booking page with train details
+                        window.location.href = `booking.php?type=train&id=${trainId}&from=${from}&to=${to}&date=${depart}&class=${trainClass}&passengers=${adults}`;
+                    });
                 });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'none';
+                }
+                document.getElementById('results-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        <p>Sorry, there was an error processing your request. Please try again later.</p>
+                        <p>${error.message}</p>
+                    </div>
+                `;
             });
-        }
-        
-        // Helper function to get full class name from code
-        function getClassFullName(classCode) {
-            const classNames = {
-                'SL': 'Sleeper',
-                '3A': 'AC 3 Tier',
-                '2A': 'AC 2 Tier',
-                '1A': 'AC First Class',
-                'CC': 'Chair Car',
-                'EC': 'Executive Chair Car'
-            };
             
-            return classNames[classCode] || classCode;
-        }
-        
-        // Helper function to show a booking modal
-        function showBookingModal(type, id, cls) {
-            // Create modal container if it doesn't exist
-            let modal = document.querySelector('.booking-modal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.className = 'booking-modal';
-                document.body.appendChild(modal);
+            // Update search form with current parameters
+            if (document.getElementById('from')) {
+                document.getElementById('from').value = from;
+            }
+            if (document.getElementById('to')) {
+                document.getElementById('to').value = to;
+            }
+            if (document.getElementById('date')) {
+                document.getElementById('date').value = depart;
+            }
+            if (document.getElementById('class')) {
+                document.getElementById('class').value = trainClass;
+            }
+            if (document.getElementById('passengers')) {
+                document.getElementById('passengers').value = adults;
             }
             
-            const urlParams = new URLSearchParams(window.location.search);
-            const travelDate = urlParams.get('date');
-            const passengers = urlParams.get('passengers');
+            // Initialize the modify search modal
+            const searchModal = document.getElementById('modify-search-modal');
+            const modifySearchBtn = document.querySelector('.modify-search-btn');
             
-            let modalContent = `
-                <div class="booking-modal-content">
-                    <div class="booking-modal-header">
-                        <h3>Confirm Your Train Booking</h3>
-                        <button class="close-modal">&times;</button>
-                    </div>
-                    <div class="booking-modal-body">
-                        <p>You are about to book a ticket for:</p>
-                        <div class="booking-details">
-                            <p><strong>Train Number:</strong> <span>${id}</span></p>
-                            <p><strong>Class:</strong> <span>${getClassFullName(cls)}</span></p>
-                            <p><strong>Date:</strong> <span>${travelDate}</span></p>
-                            <p><strong>Passengers:</strong> <span>${passengers}</span></p>
-                        </div>
-                        <p>This booking feature will be fully implemented in the next phase.</p>
-                    </div>
-                    <div class="booking-modal-footer">
-                        <button class="modal-cancel">Cancel</button>
-                        <button class="modal-confirm">Proceed to Booking</button>
-                    </div>
-                </div>
-            `;
-            
-            modal.innerHTML = modalContent;
-            
-            // Show the modal
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
-            
-            // Add event listeners to buttons
-            modal.querySelector('.close-modal').addEventListener('click', () => {
-                closeModal(modal);
-            });
-            
-            modal.querySelector('.modal-cancel').addEventListener('click', () => {
-                closeModal(modal);
-            });
-            
-            modal.querySelector('.modal-confirm').addEventListener('click', () => {
-                alert('Thank you for your booking request! This functionality will be implemented in the next phase.');
-                closeModal(modal);
-            });
-            
-            // Close when clicking outside
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeModal(modal);
+            if (modifySearchBtn && searchModal) {
+                modifySearchBtn.addEventListener('click', function() {
+                    searchModal.classList.add('show');
+                });
+                
+                // Close modal when clicking on close button
+                const closeBtn = searchModal.querySelector('.close-modal');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function() {
+                        searchModal.classList.remove('show');
+                    });
                 }
-            });
-        }
-        
-        // Helper function to close modal
-        function closeModal(modal) {
-            modal.classList.remove('show');
-            setTimeout(() => {
-                if (modal && modal.parentNode) {
-                    document.body.removeChild(modal);
-                }
-            }, 300);
-        }
+                
+                // Close modal when clicking outside content
+                searchModal.addEventListener('click', function(e) {
+                    if (e.target === searchModal) {
+                        searchModal.classList.remove('show');
+                    }
+                });
+            } else {
+                console.error('Modal elements not found:', {
+                    searchModal: Boolean(searchModal),
+                    modifySearchBtn: Boolean(modifySearchBtn)
+                });
+            }
+        });
     </script>
 </body>
 </html> 

@@ -809,7 +809,7 @@ $flightClass = isset($_GET['class']) ? $_GET['class'] : 'Economy';
             
             <!-- Search results container -->
             <div id="results-container" class="results-container">
-                <div class="results-loading">
+                <div id="loading-spinner" class="results-loading">
                     <div class="spinner"></div>
                     <p class="animate__animated animate__fadeIn">Searching for the best flights from <?php echo htmlspecialchars($fromCity); ?> to <?php echo htmlspecialchars($toCity); ?>...</p>
                     <div class="loading-tips animate__animated animate__fadeIn animate__delay-1s">
@@ -933,384 +933,271 @@ $flightClass = isset($_GET['class']) ? $_GET['class'] : 'Economy';
     <script src="js/result_animations.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Fetch flight results
-            fetchFlightResults();
-            
-            // Modal functionality
-            const modifySearchBtn = document.querySelector('.modify-search-btn');
-            const modifySearchModal = document.getElementById('modify-search-modal');
-            const closeModalBtn = modifySearchModal.querySelector('.close-modal');
-            
-            modifySearchBtn.addEventListener('click', function() {
-                modifySearchModal.classList.add('show');
-            });
-            
-            closeModalBtn.addEventListener('click', function() {
-                modifySearchModal.classList.remove('show');
-            });
-            
-            window.addEventListener('click', function(e) {
-                if (e.target === modifySearchModal) {
-                    modifySearchModal.classList.remove('show');
-                }
-            });
-            
-            // Set minimum date for date inputs
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('depart').setAttribute('min', today);
-            document.getElementById('return').setAttribute('min', today);
-            
-            // Filter functionality
-            const filterCheckboxes = document.querySelectorAll('.filter-checkbox input');
-            filterCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    // Here you would implement filtering of the displayed results
-                    // For now, we'll just log the change
-                    console.log('Filter changed:', this.parentElement.textContent.trim());
-                    filterResults();
-                });
-            });
-        });
-        
-        function filterResults() {
-            const resultCards = document.querySelectorAll('.result-card');
-            // Implement actual filtering logic here
-            
-            // For demonstration, let's just add a filtered class to show the animation
-            resultCards.forEach(card => {
-                card.classList.add('filtered-animation');
-                setTimeout(() => {
-                    card.classList.remove('filtered-animation');
-                }, 1000);
-            });
-        }
-        
-        function fetchFlightResults() {
-            // Get search parameters from URL
+            // Extract search parameters from URL
             const urlParams = new URLSearchParams(window.location.search);
-            const fromCity = urlParams.get('from');
-            const toCity = urlParams.get('to');
-            const departDate = urlParams.get('depart');
-            const returnDate = urlParams.get('return');
-            const passengers = urlParams.get('passengers');
-            const flightClass = urlParams.get('class');
+            const from = urlParams.get('from');
+            const to = urlParams.get('to');
+            const depart = urlParams.get('depart');
+            const flightClass = urlParams.get('class') || 'Economy';
+            const adults = urlParams.get('adults') || 1;
             
-            // Create form data for the API request
+            console.log('Search parameters:', { from, to, depart, flightClass, adults });
+            
+            // Check if loading-spinner element exists
+            const loadingSpinner = document.getElementById('loading-spinner');
+            if (!loadingSpinner) {
+                console.error('Loading spinner element not found!');
+            } else {
+                // Show the spinner while loading
+                loadingSpinner.style.display = 'flex';
+            }
+            
+            // Make AJAX call to get real-time flight data
             const formData = new FormData();
-            formData.append('from', fromCity);
-            formData.append('to', toCity);
-            formData.append('depart', departDate);
-            if (returnDate) formData.append('return', returnDate);
-            if (passengers) formData.append('passengers', passengers);
-            if (flightClass) formData.append('class', flightClass);
+            formData.append('from', from);
+            formData.append('to', to);
+            formData.append('depart', depart);
+            formData.append('class', flightClass);
+            formData.append('adults', adults);
             
-            // Show enhanced loading animation
-            document.querySelector('.results-loading').innerHTML = `
-                <div class="spinner"></div>
-                <p class="animate__animated animate__fadeIn">Searching for the best flights from ${fromCity} to ${toCity}...</p>
-                <div class="loading-tips animate__animated animate__fadeIn animate__delay-1s">
-                    <p><i class="fas fa-lightbulb"></i> Tip: Direct flights are usually faster but can be more expensive</p>
-                </div>
-            `;
+            console.log('Sending search request with parameters:', {
+                from, to, depart, flightClass, adults
+            });
             
-            // Make API request
-            fetch('api/flight_search.php', {
+            // For direct debugging, make a test call to see if the API endpoint is reachable
+            fetch('../dashboard/api/flight_search.php', {
+                method: 'HEAD'
+            })
+            .then(response => {
+                console.log('API endpoint reachable:', response.ok, 'Status:', response.status);
+            })
+            .catch(error => {
+                console.error('API endpoint not reachable:', error);
+            });
+            
+            // Main API call
+            fetch('../dashboard/api/flight_search.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
+                console.log('Response status:', response.status);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Hide loading indicator
-                document.querySelector('.results-loading').style.display = 'none';
-                
-                // Display results
-                displayFlightResults(data);
-            })
-            .catch(error => {
-                console.error('Error fetching flight results:', error);
-                document.querySelector('.results-loading').style.display = 'none';
-                document.getElementById('results-container').innerHTML = `
-                    <div class="error-message animate__animated animate__fadeIn">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Sorry, we couldn't fetch the flight results</h3>
-                        <p>There seems to be a connection issue with our flight search service.</p>
-                        <button class="retry-btn" onclick="fetchFlightResults()">
-                            <i class="fas fa-redo"></i> Retry Search
-                        </button>
-                    </div>
-                `;
-            });
-        }
-        
-        function displayFlightResults(data) {
-            const resultsContainer = document.getElementById('results-container');
-            
-            if (!data.flights || data.flights.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="no-results animate__animated animate__fadeIn">
-                        <i class="fas fa-plane-slash"></i>
-                        <h3>No flights found for this route</h3>
-                        <p>Please try different dates or destinations.</p>
-                        <button class="modify-search-btn">
-                            <i class="fas fa-edit"></i> Modify Search
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = `
-                <div class="results-header animate__animated animate__fadeInDown">
-                    <h3><i class="fas fa-plane"></i> Available Flights</h3>
-                    <div class="results-count">${data.count} flights found</div>
-                </div>
-                <div class="results-list">
-            `;
-            
-            data.flights.forEach((flight, index) => {
-                // Format duration
-                const duration = flight.duration;
-                
-                // Check if it's a direct flight
-                const hasStops = flight.stops > 0;
-                
-                // Format date
-                let formattedDate;
-                try {
-                    const date = new Date(flight.date);
-                    const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
-                    formattedDate = date.toLocaleDateString('en-IN', options);
-                } catch (e) {
-                    formattedDate = flight.date;
-                }
-
-                // Calculate price class (low, medium, high)
-                let priceClass = 'medium-price';
-                if (index < Math.ceil(data.flights.length * 0.3)) {
-                    priceClass = 'low-price'; // Lowest 30% prices
-                } else if (index >= Math.floor(data.flights.length * 0.7)) {
-                    priceClass = 'high-price'; // Highest 30% prices
+                    throw new Error('Network response was not ok: ' + response.status);
                 }
                 
-                // Calculate seats availability class
-                let seatsClass = 'plenty';
-                if (flight.seats_available <= 5) {
-                    seatsClass = 'limited';
-                } else if (flight.seats_available <= 15) {
-                    seatsClass = 'moderate';
-                }
-                
-                html += `
-                    <div class="result-card animate__animated animate__fadeIn" style="animation-delay: ${index * 0.1}s">
-                        <div class="result-header">
-                            <div class="airline-logo">
-                                <img src="../images/airlines/${flight.airline_code.toLowerCase()}.png" alt="${flight.airline}" onerror="this.src='../images/airlines/default.png'">
-                            </div>
-                            <div class="airline-info">
-                                <div class="airline-name">${flight.airline}</div>
-                                <div class="flight-number"><i class="fas fa-plane-departure"></i> ${flight.flight_number}</div>
-                            </div>
-                        </div>
-                        <div class="result-details">
-                            <div class="journey-times">
-                                <div class="departure">
-                                    <div class="time">${flight.departure_time}</div>
-                                    <div class="airport">${flight.from_city} (${flight.from_airport_code})</div>
-                                </div>
-                                <div class="journey-duration">
-                                    <div class="duration-line">
-                                        ${hasStops ? `<span class="stopover-indicator"></span>` : ''}
-                                    </div>
-                                    <div class="duration-time"><i class="far fa-clock"></i> ${duration}</div>
-                                    <div class="stops-indicator">
-                                        ${hasStops ? `<span class="stops">${flight.stops} stop${flight.stops > 1 ? 's' : ''}</span>` : '<span class="direct">Direct Flight</span>'}
-                                    </div>
-                                </div>
-                                <div class="arrival">
-                                    <div class="time">${flight.arrival_time}</div>
-                                    <div class="airport">${flight.to_city} (${flight.to_airport_code})</div>
-                                </div>
-                            </div>
-                            <div class="journey-date">
-                                <div class="date-label"><i class="far fa-calendar-alt"></i></div>
-                                <div class="date-value">${formattedDate}</div>
-                            </div>
-                            <div class="price-availability">
-                                <div class="price ${priceClass}">₹${flight.price.toLocaleString('en-IN')}</div>
-                                <div class="availability ${seatsClass}">${flight.seats_available} seats left</div>
-                            </div>
-                            <div class="booking-action">
-                                <button class="book-now-btn" data-flight="${flight.flight_number}">Book Now</button>
-                            </div>
-                        </div>
-                        <div class="result-footer">
-                            <button class="show-details-btn" data-toggle="flight-details-${flight.flight_number}">
-                                <span class="show-text">Show Details</span>
-                                <span class="hide-text">Hide Details</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="additional-details" id="flight-details-${flight.flight_number}">
-                                <div class="details-section">
-                                    <h4>Flight Details</h4>
-                                    <div class="flight-details-info">
-                                        <div class="detail-item">
-                                            <span class="detail-label">Aircraft Type:</span>
-                                            <span class="detail-value">${flight.aircraft || 'Boeing 737/Airbus A320'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Class:</span>
-                                            <span class="detail-value">${flight.class || 'Economy'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Baggage Allowance:</span>
-                                            <span class="detail-value">Check-in: 15kg | Cabin: 7kg</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Meal:</span>
-                                            <span class="detail-value">${flight.meal_included ? '<i class="fas fa-utensils text-success"></i> Included' : '<i class="fas fa-times text-danger"></i> Not Included'}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                ${hasStops ? `
-                                    <div class="details-section">
-                                        <h4>Stopover Details</h4>
-                                        <div class="stopover-info">
-                                            <div class="stopover-city"><i class="fas fa-map-marker-alt"></i> ${flight.stopover_city || 'Delhi'}</div>
-                                            <div class="stopover-duration"><i class="far fa-clock"></i> Duration: ${flight.stopover_duration || '1h 30m'}</div>
-                                        </div>
-                                    </div>
-                                ` : ''}
-                                <div class="details-section">
-                                    <h4>Amenities</h4>
-                                    <div class="amenities-list">
-                                        <span class="amenity"><i class="fas fa-wifi"></i> WiFi</span>
-                                        <span class="amenity"><i class="fas fa-plug"></i> Power Outlets</span>
-                                        <span class="amenity"><i class="fas fa-tv"></i> Entertainment</span>
-                                        <span class="amenity"><i class="fas fa-couch"></i> Extra Legroom</span>
-                                        <span class="amenity"><i class="fas fa-utensils"></i> Premium Meals</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += `</div>`;
-            resultsContainer.innerHTML = html;
-            
-            // Add event listeners to show/hide details buttons
-            const detailButtons = resultsContainer.querySelectorAll('.show-details-btn');
-            detailButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const detailsId = this.getAttribute('data-toggle');
-                    const detailsSection = document.getElementById(detailsId);
-                    
-                    if (detailsSection.style.display === 'block') {
-                        detailsSection.style.display = 'none';
-                        this.classList.remove('active');
-                    } else {
-                        detailsSection.style.display = 'block';
-                        this.classList.add('active');
+                // Get the raw response text for debugging
+                return response.text().then(text => {
+                    console.log('Raw response:', text.substring(0, 500) + '...');
+                    try {
+                        // Try to parse as JSON
+                        const data = JSON.parse(text);
+                        return data;
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        console.error('Response was not valid JSON:', text);
+                        throw new Error('Failed to parse JSON response');
                     }
                 });
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                
+                // Hide the spinner after data is loaded
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'none';
+                }
+                
+                if (data.error) {
+                    console.error('Error fetching flight data:', data.error);
+                    document.getElementById('results-container').innerHTML = `
+                        <div class="alert alert-danger">
+                            <p>Sorry, we couldn't find any flights for your search. Please try different dates or locations.</p>
+                            <p>Error: ${data.error}</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (!data.flights || data.count === 0) {
+                    console.log('No flights found');
+                    document.getElementById('results-container').innerHTML = `
+                        <div class="alert alert-info">
+                            <p>No flights found for this route on the selected date. Please try different dates or locations.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Generate HTML for each flight
+                const flightsHTML = data.flights.map(flight => {
+                    console.log('Processing flight:', flight);
+                    
+                    // Format price with commas
+                    const formattedPrice = new Intl.NumberFormat('en-IN', {
+                        style: 'currency',
+                        currency: 'INR',
+                        maximumFractionDigits: 0
+                    }).format(flight.price);
+                    
+                    // Determine availability status and class
+                    let availabilityStatus, statusClass;
+                    if (flight.seats_available > 10) {
+                        availabilityStatus = 'Available';
+                        statusClass = 'text-success';
+                    } else if (flight.seats_available > 0) {
+                        availabilityStatus = 'Few Seats Left';
+                        statusClass = 'text-warning';
+                    } else {
+                        availabilityStatus = 'Sold Out';
+                        statusClass = 'text-danger';
+                    }
+                    
+                    // Check if flight is delayed or cancelled
+                    let flightStatus = '';
+                    if (flight.status === 'cancelled') {
+                        flightStatus = '<span class="badge bg-danger">Cancelled</span>';
+                    } else if (flight.status === 'delayed') {
+                        flightStatus = '<span class="badge bg-warning">Delayed</span>';
+                    } else if (flight.status !== 'scheduled' && flight.status !== 'on-time' && flight.status !== 'en-route') {
+                        flightStatus = `<span class="badge bg-info">${flight.status}</span>`;
+                    }
+                    
+                    return `
+                    <div class="card mb-3 flight-card">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <div class="airline-logo mb-2">
+                                        <img src="https://via.placeholder.com/50?text=${flight.airline_code}" alt="${flight.airline}" class="img-fluid">
+                                    </div>
+                                    <div class="airline-name">${flight.airline}</div>
+                                    <div class="flight-number text-muted">${flight.flight_number}</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="departure">
+                                        <div class="time fw-bold">${flight.departure_time}</div>
+                                        <div class="airport">${flight.from_city} (${flight.from_airport_code})</div>
+                                        <div class="date">${flight.date}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <div class="duration text-muted">
+                                        <i class="fas fa-clock me-1"></i> ${flight.duration}
+                                    </div>
+                                    <div class="flight-line">
+                                        <hr>
+                                        <i class="fas fa-plane"></i>
+                                    </div>
+                                    <div class="stops text-muted">
+                                        ${flight.stops === 0 ? 'Direct' : flight.stops + ' Stop(s)'}
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="arrival">
+                                        <div class="time fw-bold">${flight.arrival_time}</div>
+                                        <div class="airport">${flight.to_city} (${flight.to_airport_code})</div>
+                                        <div class="date">${flight.date}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <div class="price fw-bold fs-5">${formattedPrice}</div>
+                                    <div class="availability ${statusClass}">${availabilityStatus}</div>
+                                    ${flightStatus}
+                                    <button class="btn btn-primary btn-sm mt-2 book-btn" data-flight-id="${flight.flight_number}" 
+                                        ${flight.seats_available <= 0 ? 'disabled' : ''}>
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="flight-details small">
+                                        <span class="me-3"><i class="fas fa-plane me-1"></i> ${flight.aircraft}</span>
+                                        ${flight.meal_included ? '<span class="me-3"><i class="fas fa-utensils me-1"></i> Meal Included</span>' : ''}
+                                        <span class="me-3"><i class="fas fa-suitcase me-1"></i> Baggage 15kg</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                console.log('Generated HTML for', data.flights.length, 'flights');
+                
+                // Update the results container
+                document.getElementById('results-container').innerHTML = flightsHTML;
+                console.log('Updated results container with flights HTML');
+                
+                // Add event listeners to all book buttons
+                document.querySelectorAll('.book-btn').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        const flightId = this.getAttribute('data-flight-id');
+                        // Redirect to booking page with flight details
+                        window.location.href = `booking.php?type=flight&id=${flightId}&from=${from}&to=${to}&date=${depart}&class=${flightClass}&adults=${adults}`;
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'none';
+                }
+                document.getElementById('results-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        <p>Sorry, there was an error processing your request. Please try again later.</p>
+                        <p>${error.message}</p>
+                    </div>
+                `;
             });
             
-            // Add event listeners to book buttons
-            const bookButtons = resultsContainer.querySelectorAll('.book-now-btn');
-            bookButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const flightNumber = this.getAttribute('data-flight');
-                    showBookingModal('flight', flightNumber);
-                });
-            });
-        }
-        
-        // Helper function to show a booking modal
-        function showBookingModal(type, id) {
-            // Create modal container if it doesn't exist
-            let modal = document.querySelector('.booking-modal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.className = 'booking-modal';
-                document.body.appendChild(modal);
+            // Update search form with current parameters
+            if (document.getElementById('from')) {
+                document.getElementById('from').value = from;
+            }
+            if (document.getElementById('to')) {
+                document.getElementById('to').value = to;
+            }
+            if (document.getElementById('depart')) {
+                document.getElementById('depart').value = depart;
+            }
+            if (document.getElementById('class')) {
+                document.getElementById('class').value = flightClass;
+            }
+            if (document.getElementById('adults')) {
+                document.getElementById('adults').value = adults;
             }
             
-            const urlParams = new URLSearchParams(window.location.search);
-            const departDate = urlParams.get('depart');
-            const returnDate = urlParams.get('return');
-            const passengers = urlParams.get('passengers');
-            const flightClass = urlParams.get('class');
+            // Initialize the modify search modal
+            const searchModal = document.getElementById('modify-search-modal');
+            const modifySearchBtn = document.querySelector('.modify-search-btn');
             
-            let modalContent = `
-                <div class="booking-modal-content animate__animated animate__fadeInUp">
-                    <div class="booking-modal-header">
-                        <h3><i class="fas fa-ticket-alt"></i> Confirm Your Flight Booking</h3>
-                        <button class="close-modal">&times;</button>
-                    </div>
-                    <div class="booking-modal-body">
-                        <p>You are about to book a ticket for:</p>
-                        <div class="booking-details">
-                            <p><strong><i class="fas fa-plane"></i> Flight Number:</strong> <span>${id}</span></p>
-                            <p><strong><i class="fas fa-chair"></i> Class:</strong> <span>${flightClass}</span></p>
-                            <p><strong><i class="far fa-calendar-check"></i> Departure Date:</strong> <span>${departDate}</span></p>
-                            ${returnDate ? `<p><strong><i class="far fa-calendar-alt"></i> Return Date:</strong> <span>${returnDate}</span></p>` : ''}
-                            <p><strong><i class="fas fa-users"></i> Passengers:</strong> <span>${passengers}</span></p>
-                        </div>
-                        <div class="booking-notice">
-                            <p><i class="fas fa-info-circle"></i> This booking feature will be fully implemented in the next phase.</p>
-                        </div>
-                    </div>
-                    <div class="booking-modal-footer">
-                        <button class="modal-cancel"><i class="fas fa-times"></i> Cancel</button>
-                        <button class="modal-confirm"><i class="fas fa-check"></i> Proceed to Booking</button>
-                    </div>
-                </div>
-            `;
-            
-            modal.innerHTML = modalContent;
-            
-            // Show the modal
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
-            
-            // Add event listeners to buttons
-            modal.querySelector('.close-modal').addEventListener('click', () => {
-                closeModal(modal);
-            });
-            
-            modal.querySelector('.modal-cancel').addEventListener('click', () => {
-                closeModal(modal);
-            });
-            
-            modal.querySelector('.modal-confirm').addEventListener('click', () => {
-                alert('Thank you for your booking request! This functionality will be implemented in the next phase.');
-                closeModal(modal);
-            });
-            
-            // Close when clicking outside
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeModal(modal);
+            if (modifySearchBtn && searchModal) {
+                modifySearchBtn.addEventListener('click', function() {
+                    searchModal.classList.add('show');
+                });
+                
+                // Close modal when clicking on close button
+                const closeBtn = searchModal.querySelector('.close-modal');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function() {
+                        searchModal.classList.remove('show');
+                    });
                 }
-            });
-        }
-        
-        // Helper function to close modal
-        function closeModal(modal) {
-            modal.classList.remove('show');
-            setTimeout(() => {
-                if (modal && modal.parentNode) {
-                    document.body.removeChild(modal);
-                }
-            }, 300);
-        }
+                
+                // Close modal when clicking outside content
+                searchModal.addEventListener('click', function(e) {
+                    if (e.target === searchModal) {
+                        searchModal.classList.remove('show');
+                    }
+                });
+            } else {
+                console.error('Modal elements not found:', {
+                    searchModal: Boolean(searchModal),
+                    modifySearchBtn: Boolean(modifySearchBtn)
+                });
+            }
+        });
     </script>
 </body>
 </html> 
