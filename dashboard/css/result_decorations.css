@@ -1,0 +1,479 @@
+/* Decorative Enhancements for Search Results UI */
+
+/* Results header with gradient and icon styling */
+.results-header {
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.15), rgba(var(--primary-rgb), 0.05));
+  padding: 20px 25px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.results-header h3 {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.results-header h3 i {
+  background-color: var(--primary-color);
+  color: white;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-right: 12px;
+  box-shadow: 0 3px 8px rgba(var(--primary-rgb), 0.3);
+}
+
+.results-count {
+  background-color: white;
+  border: 1px solid rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.1);
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-weight: 600;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+}
+
+.results-count:before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* Beautiful card styling */
+.result-card, .hotel-result-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+  transition: all 0.3s ease;
+  position: relative;
+  background-color: #fff; /* Solid white background */
+}
+
+.result-card:hover, .hotel-result-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Card with subtle pattern in the background - reduce opacity further */
+.result-card:before, .hotel-result-card:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.15; /* Reduced opacity for pattern */
+  pointer-events: none;
+}
+
+/* Card header with gradient background - make more opaque */
+.result-header {
+  background: linear-gradient(to right, rgba(var(--primary-rgb), 0.2), rgba(var(--primary-rgb), 0.1));
+  padding: 20px 25px;
+  border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
+  position: relative;
+  -webkit-backdrop-filter: blur(5px); /* Safari support */
+  backdrop-filter: blur(5px); /* Add blur filter for better visibility */
+}
+
+/* Result details styling for consistency */
+.result-details {
+  background-color: #fff;
+  position: relative;
+  z-index: 1;
+  padding: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
+}
+
+.journey-times, 
+.journey-date, 
+.price-availability, 
+.booking-action {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(var(--primary-rgb), 0.05);
+}
+
+/* Make the additional details section more visible */
+.additional-details {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid rgba(var(--primary-rgb), 0.2);
+}
+
+/* Make details sections more visible */
+.details-section {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 15px;
+  padding: 15px;
+  border: 1px solid rgba(var(--primary-rgb), 0.1);
+}
+
+/* Enhanced room options with solid background */
+.room-option {
+  background-color: #fff;
+  border: 1px solid rgba(var(--primary-rgb), 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 10px;
+}
+
+.room-option:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: var(--primary-color);
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.room-option:hover:before {
+  opacity: 1;
+}
+
+.room-option:hover {
+  background-color: rgba(var(--primary-rgb), 0.05);
+  transform: translateX(5px);
+}
+
+/* Add a decorative element to train/flight results */
+.train-name:after, .airline-name:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 60px;
+  background-image: linear-gradient(to right, transparent, rgba(var(--primary-rgb), 0.05));
+  pointer-events: none;
+}
+
+.train-number, .flight-number {
+  display: inline-block;
+  background-color: rgba(var(--primary-rgb), 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  margin-top: 5px;
+}
+
+/* Decorative journey timeline */
+.journey-times {
+  position: relative;
+}
+
+.journey-duration {
+  position: relative;
+}
+
+.duration-line {
+  position: relative;
+  height: 3px;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(var(--primary-rgb), 0.3) 0px,
+    rgba(var(--primary-rgb), 0.3) 8px,
+    transparent 8px,
+    transparent 12px
+  );
+}
+
+.duration-line:before, .duration-line:after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.duration-line:before {
+  left: 0;
+}
+
+.duration-line:after {
+  right: 0;
+}
+
+.duration-time {
+  margin: 12px 0;
+  background-color: white;
+  border-radius: 30px;
+  padding: 6px 15px;
+  font-weight: 600;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(var(--primary-rgb), 0.15);
+  position: relative;
+  text-align: center;
+}
+
+/* Price and availability styling */
+.price {
+  color: var(--primary-color);
+  font-size: 1.6rem;
+  font-weight: 800;
+  position: relative;
+  display: inline-block;
+}
+
+.price:before {
+  content: '';
+  position: absolute;
+  height: 4px;
+  width: 100%;
+  background-color: rgba(var(--primary-rgb), 0.1);
+  bottom: -4px;
+  left: 0;
+  border-radius: 2px;
+}
+
+.availability {
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-weight: 700;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+.availability:before {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 4px;
+  left: 0;
+  top: 0;
+}
+
+.available {
+  background-color: rgba(32, 191, 107, 0.1);
+  color: #0a8a41;
+}
+
+.available:before {
+  background-color: #0a8a41;
+}
+
+.wait-list, .limited {
+  background-color: rgba(255, 165, 0, 0.1);
+  color: #d17f00;
+}
+
+.wait-list:before, .limited:before {
+  background-color: #d17f00;
+}
+
+.not-available {
+  background-color: rgba(255, 107, 107, 0.1);
+  color: #d43c3c;
+}
+
+.not-available:before {
+  background-color: #d43c3c;
+}
+
+/* Beautiful Book Now button */
+.book-now-btn {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-weight: 700;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.book-now-btn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.book-now-btn:hover:before {
+  left: 100%;
+}
+
+.book-now-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.4);
+}
+
+/* Show details button styling */
+.show-details-btn, .view-details-btn {
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.show-details-btn:after, .view-details-btn:after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: var(--primary-color);
+  transition: 0.3s;
+  transform: translateX(-50%);
+}
+
+.show-details-btn:hover:after, .view-details-btn:hover:after {
+  width: 60%;
+}
+
+.show-details-btn i {
+  transition: transform 0.3s;
+  margin-left: 8px;
+}
+
+.show-details-btn.active i {
+  transform: rotate(180deg);
+}
+
+/* Enhanced hotel image styling */
+.hotel-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.hotel-image:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+  pointer-events: none;
+}
+
+.hotel-image img {
+  transition: transform 0.7s;
+}
+
+.hotel-result-card:hover .hotel-image img {
+  transform: scale(1.08);
+}
+
+/* Hotel amenities styling */
+.amenity {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(var(--primary-rgb), 0.08);
+  border-radius: 30px;
+  padding: 5px 12px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.amenity:hover {
+  background-color: rgba(var(--primary-rgb), 0.15);
+  transform: translateY(-2px);
+}
+
+.amenity i {
+  color: var(--primary-color);
+  margin-right: 5px;
+}
+
+/* Empty state styling */
+.no-results, .error-message {
+  background-color: white;
+  border-radius: 15px;
+  text-align: center;
+  padding: 60px 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.no-results:before, .error-message:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+.no-results i, .error-message i {
+  font-size: 4rem;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+/* Making select room button stand out */
+.select-room-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 15px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.select-room-btn:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+} 

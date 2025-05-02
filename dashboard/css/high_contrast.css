@@ -1,0 +1,123 @@
+/* High Contrast Enhancements for Search Results */
+
+/* High contrast text for important information */
+.train-name, 
+.airline-name, 
+.hotel-name {
+  color: #111 !important;
+  font-weight: 800 !important;
+  font-size: 1.4rem !important;
+  text-shadow: none !important;
+}
+
+.time {
+  color: #000 !important;
+  font-weight: 800 !important;
+  font-size: 1.6rem !important;
+  text-shadow: none !important;
+}
+
+.station, 
+.airport, 
+.destination-name {
+  color: #222 !important;
+  font-weight: 700 !important;
+  font-size: 1.05rem !important;
+}
+
+.duration-time {
+  color: #111 !important;
+  font-weight: 700 !important;
+  background-color: #f8f8f8 !important;
+  border: 1px solid #ccc !important;
+}
+
+/* Price with higher contrast */
+.price {
+  color: #005eb8 !important; /* Darker blue for better contrast */
+  font-weight: 800 !important;
+  font-size: 1.7rem !important;
+  text-shadow: none !important;
+}
+
+/* Improved availability badges */
+.availability {
+  font-weight: 700 !important;
+  padding: 8px 16px !important;
+}
+
+.available {
+  background-color: #e3f7eb !important;
+  color: #006633 !important;
+  border: 1px solid #006633 !important;
+}
+
+.wait-list, .limited {
+  background-color: #fff4e5 !important;
+  color: #663c00 !important;
+  border: 1px solid #cc7a00 !important;
+}
+
+.not-available {
+  background-color: #ffe5e5 !important;
+  color: #b30000 !important;
+  border: 1px solid #b30000 !important;
+}
+
+/* Make buttons more visible */
+.book-now-btn {
+  background-color: #005eb8 !important; /* Darker blue for better contrast */
+  color: white !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+  border: none !important;
+  padding: 14px 28px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.book-now-btn:hover {
+  background-color: #004085 !important;
+}
+
+.show-details-btn, 
+.view-details-btn {
+  color: #005eb8 !important;
+  font-weight: 700 !important;
+}
+
+/* Improve section headers */
+.results-header h3 {
+  color: #111 !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+}
+
+.results-count {
+  background-color: #e9f0f7 !important;
+  color: #005eb8 !important;
+  font-weight: 700 !important;
+  border: 1px solid #005eb8 !important;
+}
+
+/* High contrast button for enabling/disabling high contrast mode */
+.high-contrast-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.high-contrast-toggle i {
+  font-size: 24px;
+} 

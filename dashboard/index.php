@@ -64,6 +64,8 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="dashboard-fixes.css">
+    <link rel="stylesheet" href="css/travel_search.css">
+    <link rel="stylesheet" href="css/visibility_enhancements.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -239,17 +241,19 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="train-passengers">Passengers</label>
-                                <select id="train-passengers" class="form-control">
-                                    <option value="1">1 Passenger</option>
-                                    <option value="2">2 Passengers</option>
-                                    <option value="3">3 Passengers</option>
-                                    <option value="4">4 Passengers</option>
-                                    <option value="5+">5+ Passengers</option>
-                                </select>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="train-passengers">Passengers</label>
+                                    <select id="train-passengers" class="form-control">
+                                        <option value="1">1 Passenger</option>
+                                        <option value="2">2 Passengers</option>
+                                        <option value="3">3 Passengers</option>
+                                        <option value="4">4 Passengers</option>
+                                        <option value="5+">5+ Passengers</option>
+                                    </select>
+                                </div>
                             </div>
-                            <button class="booking-search-btn">Search Trains <i class="fas fa-search"></i></button>
+                            <button type="button" class="booking-search-btn">Search Trains <i class="fas fa-search"></i></button>
                         </div>
                     </div>
                     
@@ -301,7 +305,7 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
                                     </select>
                                 </div>
                             </div>
-                            <button class="booking-search-btn">Search Flights <i class="fas fa-search"></i></button>
+                            <button type="button" class="booking-search-btn">Search Flights <i class="fas fa-search"></i></button>
                         </div>
                     </div>
                 </div>
@@ -590,8 +594,7 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
     <script src="../script.js"></script>
     <script src="dashboard.js"></script>
     <script src="dashboard-fixes.js"></script>
-    <script>
-        // All travel card related code has been removed
-    </script>
+    <script src="js/travel_search.js"></script>
+    <script src="js/visibility_enhancements.js"></script>
 </body>
 </html> 
