@@ -8,6 +8,41 @@ window.addEventListener('scroll', function() {
     }
 });
 
+// Fix for any unwanted output after the footer
+(function() {
+    // Override document.write to prevent unwanted output
+    const originalDocumentWrite = document.write;
+    document.write = function() {
+        // Check if we're in the body and after the footer
+        const footer = document.querySelector('.footer-section');
+        if (footer && document.readyState === 'complete') {
+            console.warn('Blocked document.write after page load');
+            return;
+        }
+        // Otherwise, use the original document.write
+        return originalDocumentWrite.apply(document, arguments);
+    };
+    
+    // Clean up any unwanted elements that might appear
+    window.addEventListener('DOMContentLoaded', function() {
+        // Remove any direct text nodes under body (outside of elements)
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length) {
+                    for (let i = 0; i < mutation.addedNodes.length; i++) {
+                        const node = mutation.addedNodes[i];
+                        if (node.nodeType === 3 && node.parentNode === document.body) {
+                            node.remove();
+                        }
+                    }
+                }
+            });
+        });
+        
+        observer.observe(document.body, { childList: true });
+    });
+})();
+
 // Simple function to show a toast notification
 function showToast(message, duration = 2000) {
     // Get the toast container

@@ -102,7 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'payment_method' => 'Credit Card',
             'amount' => $totalAmount,
             'payment_date' => date('Y-m-d H:i:s'),
-            'payment_status' => 'completed'
+            'payment_status' => 'completed',
+            'transaction_id' => 'TXN' . strtoupper(substr(md5(time() . uniqid()), 0, 15))
         ];
         
         // Save booking to database

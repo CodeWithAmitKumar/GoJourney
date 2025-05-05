@@ -59,6 +59,8 @@ $rooms = isset($_GET['rooms']) ? $_GET['rooms'] : 1;
     <link rel="stylesheet" href="css/result_decorations.css">
     <!-- High contrast stylesheet (disabled by default, toggled by JavaScript) -->
     <link rel="stylesheet" href="css/high_contrast.css" id="high-contrast-stylesheet" disabled>
+    <!-- Footer fix to prevent unwanted characters -->
+    <link rel="stylesheet" href="css/footer-fix.css">
     <!-- Add modern UI enhancements -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1208,6 +1210,47 @@ $rooms = isset($_GET['rooms']) ? $_GET['rooms'] : 1;
                 }
             }, 300);
         }
+    </script>
+    <!-- Add cleanup script for any unwanted text nodes -->
+    <script>
+        // Function to clean up unwanted text nodes or elements
+        function cleanupUnwantedNodes() {
+            // Clean up any direct text children of body
+            Array.from(document.body.childNodes).forEach(node => {
+                if (node.nodeType === 3 && node.textContent.trim() !== '') {
+                    node.textContent = '';
+                }
+            });
+            
+            // Clean up any elements that come after the main content
+            const mainContent = document.querySelector('.results-page-container');
+            if (mainContent) {
+                let currentNode = mainContent.nextSibling;
+                while (currentNode) {
+                    const nextNode = currentNode.nextSibling;
+                    if (currentNode.nodeType === 3 || (currentNode.nodeType === 1 && 
+                        !currentNode.classList.contains('toast-container') && 
+                        currentNode.tagName !== 'SCRIPT')) {
+                        if (currentNode.parentNode) {
+                            currentNode.parentNode.removeChild(currentNode);
+                        }
+                    }
+                    currentNode = nextNode;
+                }
+            }
+        }
+        
+        // Run cleanup when DOM is loaded and after a delay
+        document.addEventListener('DOMContentLoaded', function() {
+            cleanupUnwantedNodes();
+            setTimeout(cleanupUnwantedNodes, 500);
+        });
+        
+        // Run once more when everything is loaded
+        window.addEventListener('load', function() {
+            cleanupUnwantedNodes();
+            setTimeout(cleanupUnwantedNodes, 1000);
+        });
     </script>
 </body>
 </html> 

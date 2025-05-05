@@ -1,0 +1,39 @@
+/* Footer fix for dashboard - removes unwanted elements */
+body::after {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+}
+
+/* Hide any script outputs */
+script + text,
+script + div:empty,
+script:not([src]) + * {
+    display: none !important;
+}
+
+/* Fix for any zero elements that might appear due to document.write or other issues */
+.site-footer + *:not(.toast-container) {
+    display: none !important;
+}
+
+/* Additional specific fix for Chrome/Edge zero issues */
+body > *:last-child:not(script):not(footer):not(.site-footer) {
+    display: none !important;
+}
+
+/* Fix for search result pages */
+.results-page-container + *:not(.toast-container),
+.hotel-results-container + *:not(.toast-container),
+.flight-results-container + *:not(.toast-container),
+.train-results-container + *:not(.toast-container) {
+    display: none !important;
+}
+
+/* Also target the bottom text nodes in body on specific pages */
+body:has(.results-page-container) > text:last-child,
+body:has(.hotel-results-container) > text:last-child,
+body:has(.flight-results-container) > text:last-child,
+body:has(.train-results-container) > text:last-child {
+    display: none !important;
+} 

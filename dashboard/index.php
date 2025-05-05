@@ -66,6 +66,7 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
     <link rel="stylesheet" href="dashboard-fixes.css">
     <link rel="stylesheet" href="css/travel_search.css">
     <link rel="stylesheet" href="css/visibility_enhancements.css">
+    <link rel="stylesheet" href="css/footer-fix.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -596,5 +597,30 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
     <script src="dashboard-fixes.js"></script>
     <script src="js/travel_search.js"></script>
     <script src="js/visibility_enhancements.js"></script>
+    <script>
+        // Clean up any unwanted text nodes that might appear at the end of the body
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove any direct text nodes under body (outside of elements)
+            for (let i = 0; i < document.body.childNodes.length; i++) {
+                const node = document.body.childNodes[i];
+                if (node.nodeType === 3 && node.textContent.trim() !== '') {
+                    node.textContent = '';
+                }
+            }
+            
+            // Remove any unwanted elements that appear after the footer
+            const footer = document.querySelector('.site-footer');
+            if (footer) {
+                let currentNode = footer.nextSibling;
+                while (currentNode) {
+                    const nextNode = currentNode.nextSibling;
+                    if (currentNode.nodeType === 3 || (currentNode.nodeType === 1 && !currentNode.classList.contains('toast-container'))) {
+                        currentNode.parentNode.removeChild(currentNode);
+                    }
+                    currentNode = nextNode;
+                }
+            }
+        });
+    </script>
 </body>
 </html> 

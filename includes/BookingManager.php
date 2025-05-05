@@ -101,8 +101,8 @@ class BookingManager {
             
             // Insert payment details
             $paymentSql = "INSERT INTO payments (
-                booking_id, payment_method, amount, payment_date, payment_status
-            ) VALUES (?, ?, ?, ?, ?)";
+                booking_id, payment_method, amount, payment_date, payment_status, transaction_id
+            ) VALUES (?, ?, ?, ?, ?, ?)";
             
             $paymentStmt = mysqli_prepare($this->conn, $paymentSql);
             
@@ -111,12 +111,13 @@ class BookingManager {
             }
             
             mysqli_stmt_bind_param($paymentStmt, 
-                "isdss", 
+                "isdsss", 
                 $bookingId,
                 $paymentData['payment_method'],
                 $paymentData['amount'],
                 $paymentData['payment_date'],
-                $paymentData['payment_status']
+                $paymentData['payment_status'],
+                $paymentData['transaction_id']
             );
             
             $result = mysqli_stmt_execute($paymentStmt);
@@ -194,7 +195,7 @@ class BookingManager {
      */
     public function getBookingById($bookingId, $userId) {
         // Get booking details
-        $sql = "SELECT b.*, p.payment_method, p.payment_status, p.payment_date AS payment_timestamp
+        $sql = "SELECT b.*, p.payment_method, p.payment_status, p.payment_date AS payment_timestamp, p.transaction_id
                 FROM bookings b 
                 LEFT JOIN payments p ON b.booking_id = p.booking_id 
                 WHERE b.booking_id = ? AND b.user_id = ?";

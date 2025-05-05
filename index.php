@@ -412,6 +412,56 @@
         </div>
     </div>
 
+    <!-- Footer Section -->
+    <footer class="footer-section">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>GoJourney</h3>
+                <p>Explore the world with confidence. We provide unforgettable travel experiences with personalized itineraries and exceptional customer service.</p>
+                <div class="social-icons">
+                    <a href="https://x.com/Codewith_amit?t=wzxyQYtIqyK_JnFzeww4uQ&s=09" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/thatodiapila?igsh=MXRyeXBjZ2l2ZXduZQ==" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://github.com/CodeWithAmitKumar" class="social-icon"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/amit-web-developer/" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#popular-destinations">Destinations</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <ul class="footer-links">
+                    <li><a href="tel:+918984972877">+91 8984972877</a></li>
+                    <li><a href="mailto:support@gojourney.com">support@gojourney.com</a></li>
+                    <li>016 Travel Road, Baripada, Mayurbhanj, Odisha</li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Newsletter</h3>
+                <p>Subscribe to our newsletter for travel tips and exclusive offers.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your Email Address" required>
+                    <button type="submit">Join</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; <?php echo date("Y"); ?> GoJourney. All Rights Reserved. Made with <i class="fas fa-heart" style="color: #ff6b6b;"></i> in India</p>
+        </div>
+    </footer>
+
+    <!-- Make sure script tags are closed correctly -->
     <script src="script.js"></script>
     <script>
         // Verify DOM loading
@@ -549,54 +599,5 @@
             }, 10);
         });
     </script>
-
-    <!-- Footer Section -->
-    <footer class="footer-section">
-        <div class="footer-container">
-            <div class="footer-column">
-                <h3>GoJourney</h3>
-                <p>Explore the world with confidence. We provide unforgettable travel experiences with personalized itineraries and exceptional customer service.</p>
-                <div class="social-icons">
-                    <a href="https://x.com/Codewith_amit?t=wzxyQYtIqyK_JnFzeww4uQ&s=09" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.instagram.com/thatodiapila?igsh=MXRyeXBjZ2l2ZXduZQ==" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="https://github.com/CodeWithAmitKumar" class="social-icon"><i class="fab fa-github"></i></a>
-                    <a href="https://www.linkedin.com/in/amit-web-developer/" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            
-            <div class="footer-column">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#popular-destinations">Destinations</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#contact">Contact Us</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-column">
-                <h3>Contact</h3>
-                <ul class="footer-links">
-                    <li><a href="tel:+918984972877">+91 8984972877</a></li>
-                    <li><a href="mailto:support@gojourney.com">support@gojourney.com</a></li>
-                    <li>016 Travel Road, Baripada, Mayurbhanj, Odisha</li>
-                </ul>
-            </div>
-            
-            <div class="footer-column">
-                <h3>Newsletter</h3>
-                <p>Subscribe to our newsletter for travel tips and exclusive offers.</p>
-                <form class="newsletter-form">
-                    <input type="email" placeholder="Your Email Address" required>
-                    <button type="submit">Join</button>
-                </form>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; <?php echo date("Y"); ?> GoJourney. All Rights Reserved. Made with <i class="fas fa-heart" style="color: #ff6b6b;"></i> in India</p>
-        </div>
-    </footer>
 </body>
 </html>

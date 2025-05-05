@@ -58,6 +58,102 @@ if ($bookingId) {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
     }
+    
+    // Get passenger details
+    $passengerSql = "SELECT * FROM passengers WHERE booking_id = ?";
+    $passengerStmt = mysqli_prepare($conn, $passengerSql);
+
+    if ($passengerStmt) {
+        mysqli_stmt_bind_param($passengerStmt, "i", $bookingId);
+        mysqli_stmt_execute($passengerStmt);
+        $passengerResult = mysqli_stmt_get_result($passengerStmt);
+        
+        $updatedPassengerDetails = [];
+        $assignedSeats = []; // Keep track of assigned seats
+
+        while ($row = mysqli_fetch_assoc($passengerResult)) {
+            // Generate and update seat number if not already set
+            if (empty($row['seat_number'])) {
+                $seatNumber = '';
+                $attempts = 0;
+                
+                // Try to generate a unique seat number (max 10 attempts to prevent infinite loop)
+                do {
+                    $attempts++;
+                    
+                    // Generate different seat formats based on booking type
+                    if ($bookingType === 'train') {
+                        // For trains: Format like S4102 (coach letter + number)
+                        // Map travel class to coach prefix
+                        $coachPrefix = 'S'; // Default (Sleeper)
+                        
+                        switch ($travelClass) {
+                            case 'SL': $coachPrefix = 'S'; break; // Sleeper
+                            case '3A': $coachPrefix = 'B'; break; // AC 3 Tier
+                            case '2A': $coachPrefix = 'A'; break; // AC 2 Tier
+                            case '1A': $coachPrefix = 'H'; break; // AC First Class
+                            case 'CC': $coachPrefix = 'C'; break; // Chair Car
+                            default:   $coachPrefix = 'S'; break;
+                        }
+                        
+                        $coachNumber = rand(1, 9);
+                        $seatNumber = $coachPrefix . $coachNumber . str_pad(rand(1, 72), 2, '0', STR_PAD_LEFT);
+                    } else {
+                        // For flights: Create a realistic seat number based on class
+                        // Economy: Usually numbered rows with A-F seats (e.g., 14A, 26F)
+                        // Business/First: Lower row numbers with A-D or A-K seats
+                        
+                        if ($travelClass == 'Economy' || $travelClass == 'Premium Economy') {
+                            $row_num = rand(10, 40);
+                            $seat_letter = chr(rand(65, 70)); // A to F
+                        } else {
+                            // Business or First class
+                            $row_num = rand(1, 8);
+                            if (rand(0, 1) == 0) {
+                                // Narrow body config (A-D)
+                                $seat_letter = chr(rand(65, 68)); // A to D
+                            } else {
+                                // Wide body config (A-K, skipping I)
+                                $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K'];
+                                $seat_letter = $letters[array_rand($letters)];
+                            }
+                        }
+                        
+                        $seatNumber = $row_num . $seat_letter;
+                    }
+                    
+                } while (in_array($seatNumber, $assignedSeats) && $attempts < 10);
+                
+                // Keep track of this seat as assigned
+                $assignedSeats[] = $seatNumber;
+                
+                // Update seat number in database
+                $updateSeatSql = "UPDATE passengers SET seat_number = ? WHERE passenger_id = ?";
+                $seatStmt = mysqli_prepare($conn, $updateSeatSql);
+                
+                if ($seatStmt) {
+                    mysqli_stmt_bind_param($seatStmt, "si", $seatNumber, $row['passenger_id']);
+                    mysqli_stmt_execute($seatStmt);
+                    mysqli_stmt_close($seatStmt);
+                    
+                    // Update row with new seat number
+                    $row['seat_number'] = $seatNumber;
+                }
+            } else {
+                // If seat already assigned, add to the tracking list
+                $assignedSeats[] = $row['seat_number'];
+            }
+            
+            $updatedPassengerDetails[] = $row;
+        }
+        
+        // Use updated passenger details with seat numbers
+        if (!empty($updatedPassengerDetails)) {
+            $passengerDetails = $updatedPassengerDetails;
+        }
+        
+        mysqli_stmt_close($passengerStmt);
+    }
 }
 
 // Clear booking details from session after showing the ticket
@@ -613,7 +709,7 @@ if ($bookingId) {
                                         <td><?php echo $passenger['name']; ?></td>
                                         <td><?php echo $passenger['age']; ?></td>
                                         <td><?php echo $passenger['gender']; ?></td>
-                                        <td><?php echo strtoupper(substr(md5($pnr . $index), 0, 2)) . ($index + 1); ?></td>
+                                        <td><?php echo $passenger['seat_number'] ? $passenger['seat_number'] : 'Not Assigned'; ?></td>
                                     </tr>
                                     <?php endforeach; ?>
                                 </tbody>

@@ -1522,6 +1522,22 @@ body {
     background: linear-gradient(90deg, #007bff, #00c6ff, #00e1ff);
 }
 
+/* Fix for unwanted element after footer */
+body::after {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+}
+
+/* Hide any script outputs */
+script + text,
+script + div:empty,
+script:not([src]) + * {
+    display: none !important;
+}
+
+/* End of fix */
+
 .footer-container {
     display: flex;
     flex-wrap: wrap;

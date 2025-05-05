@@ -1113,4 +1113,70 @@ function ensureDarkModeConsistency() {
             travelExplorer.classList.add('dark-mode-section');
         }
     }
-} 
+}
+
+// Dashboard Fixes - For resolving common issues
+
+// Fix for unwanted "0" appearing at the end of the page
+(function() {
+    // Override document.write to prevent unwanted output
+    const originalDocumentWrite = document.write;
+    document.write = function() {
+        // If document is already fully loaded, prevent document.write
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            console.warn('Blocked document.write after page load');
+            return;
+        }
+        // Otherwise, use the original document.write
+        return originalDocumentWrite.apply(document, arguments);
+    };
+    
+    // Function to clean up any "0" or text nodes that appear after page load
+    function cleanupUnwantedNodes() {
+        // Find the footer element
+        const footer = document.querySelector('.site-footer');
+        
+        if (footer) {
+            // Get all siblings after the footer
+            let nextElement = footer.nextSibling;
+            
+            while (nextElement) {
+                const nodeToRemove = nextElement;
+                nextElement = nextElement.nextSibling;
+                
+                // If it's a text node with content or an element that shouldn't be there
+                if (nodeToRemove.nodeType === 3 || 
+                   (nodeToRemove.nodeType === 1 && 
+                    !nodeToRemove.classList.contains('toast-container') && 
+                    nodeToRemove.tagName !== 'SCRIPT')) {
+                    if (nodeToRemove.parentNode) {
+                        nodeToRemove.parentNode.removeChild(nodeToRemove);
+                    }
+                }
+            }
+        }
+        
+        // Also clean up any direct text children of body
+        Array.from(document.body.childNodes).forEach(node => {
+            if (node.nodeType === 3 && node.textContent.trim() !== '') {
+                node.textContent = '';
+            }
+        });
+    }
+    
+    // Run the cleanup on DOMContentLoaded and after a short delay
+    document.addEventListener('DOMContentLoaded', function() {
+        cleanupUnwantedNodes();
+        
+        // Also run after a delay to catch any late additions
+        setTimeout(cleanupUnwantedNodes, 500);
+    });
+    
+    // Run once more when window has fully loaded
+    window.addEventListener('load', function() {
+        cleanupUnwantedNodes();
+        
+        // And again after a delay to be extra sure
+        setTimeout(cleanupUnwantedNodes, 1000);
+    });
+})(); 
