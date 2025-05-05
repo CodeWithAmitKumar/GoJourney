@@ -1,0 +1,113 @@
+/* Flight booking styles */
+
+/* Flight type selector styles */
+.flight-type-selector {
+    margin-bottom: 20px;
+}
+
+.radio-group {
+    display: flex;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    width: fit-content;
+}
+
+.radio-container {
+    position: relative;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-user-select: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.radio-container input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.radio-label {
+    display: inline-block;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+/* Custom styling for selected state */
+.radio-container input[type="radio"]:checked + .radio-label {
+    color: #4a6da7;
+    font-weight: 600;
+}
+
+.radio-container:has(input[type="radio"]:checked) {
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .radio-group {
+        width: 100%;
+    }
+    
+    .radio-container {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Return date container transition */
+.return-date-container {
+    transition: all 0.3s ease;
+}
+
+/* Override for form-row in flight bookings */
+.flight-card .form-row {
+    align-items: flex-start;
+}
+
+/* Flight search button styling */
+.flight-card .booking-search-btn {
+    background: linear-gradient(135deg, #f87575 0%, #e45e5e 100%);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(248, 117, 117, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.flight-card .booking-search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(248, 117, 117, 0.3);
+}
+
+.flight-card .booking-search-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+}
+
+.flight-card .booking-search-btn:hover::before {
+    left: 100%;
+} 

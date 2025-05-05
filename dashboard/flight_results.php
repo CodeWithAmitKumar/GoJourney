@@ -44,6 +44,7 @@ $departDate = isset($_GET['depart']) ? $_GET['depart'] : '';
 $returnDate = isset($_GET['return']) ? $_GET['return'] : '';
 $passengers = isset($_GET['passengers']) ? $_GET['passengers'] : 1;
 $flightClass = isset($_GET['class']) ? $_GET['class'] : 'Economy';
+$flightType = isset($_GET['type']) ? $_GET['type'] : 'one-way';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -735,7 +736,8 @@ $flightClass = isset($_GET['class']) ? $_GET['class'] : 'Economy';
                             <div class="station"><?php echo htmlspecialchars($toCity); ?></div>
                         </div>
                         <div class="date-passengers">
-                            <div class="search-date"><i class="far fa-calendar-alt"></i> <?php echo htmlspecialchars($departDate); ?><?php echo $returnDate ? ' - ' . htmlspecialchars($returnDate) : ''; ?></div>
+                            <div class="trip-type"><i class="fas fa-<?php echo $flightType === 'round-trip' ? 'exchange-alt' : 'plane-departure'; ?>"></i> <?php echo $flightType === 'round-trip' ? 'Round Trip' : 'One Way'; ?></div>
+                            <div class="search-date"><i class="far fa-calendar-alt"></i> <?php echo htmlspecialchars($departDate); ?><?php echo $flightType === 'round-trip' && $returnDate ? ' - ' . htmlspecialchars($returnDate) : ''; ?></div>
                             <div class="search-passengers"><i class="fas fa-user"></i> <?php echo htmlspecialchars($passengers); ?> passenger<?php echo $passengers > 1 ? 's' : ''; ?></div>
                             <div class="search-class"><i class="fas fa-chair"></i> <?php echo htmlspecialchars($flightClass); ?></div>
                         </div>
@@ -828,6 +830,20 @@ $flightClass = isset($_GET['class']) ? $_GET['class'] : 'Economy';
                     </div>
                     <div class="search-modal-body">
                         <form id="modify-search-form" action="flight_results.php" method="GET">
+                            <!-- Flight type selector -->
+                            <div class="form-group flight-type-selector">
+                                <div class="radio-group">
+                                    <label class="radio-container">
+                                        <input type="radio" name="type" id="modal-one-way" value="one-way" <?php echo $flightType !== 'round-trip' ? 'checked' : ''; ?>>
+                                        <span class="radio-label">One Way</span>
+                                    </label>
+                                    <label class="radio-container">
+                                        <input type="radio" name="type" id="modal-round-trip" value="round-trip" <?php echo $flightType === 'round-trip' ? 'checked' : ''; ?>>
+                                        <span class="radio-label">Round Trip</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="from">From</label>
@@ -843,9 +859,9 @@ $flightClass = isset($_GET['class']) ? $_GET['class'] : 'Economy';
                                     <label for="depart">Departure Date</label>
                                     <input type="date" id="depart" name="depart" class="form-control" value="<?php echo htmlspecialchars($departDate); ?>" required>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group modal-return-container" style="<?php echo $flightType !== 'round-trip' ? 'display: none;' : ''; ?>">
                                     <label for="return">Return Date</label>
-                                    <input type="date" id="return" name="return" class="form-control" value="<?php echo htmlspecialchars($returnDate); ?>">
+                                    <input type="date" id="return" name="return" class="form-control" value="<?php echo htmlspecialchars($returnDate); ?>" <?php echo $flightType === 'round-trip' ? 'required' : ''; ?>>
                                 </div>
                             </div>
                             <div class="form-row">
@@ -1233,6 +1249,59 @@ $flightClass = isset($_GET['class']) ? $_GET['class'] : 'Economy';
         document.addEventListener('DOMContentLoaded', function() {
             cleanupUnwantedNodes();
             setTimeout(cleanupUnwantedNodes, 500);
+            
+            // Handle flight type toggle in the modify search modal
+            const oneWayRadio = document.getElementById('modal-one-way');
+            const roundTripRadio = document.getElementById('modal-round-trip');
+            const returnDateContainer = document.querySelector('.modal-return-container');
+            const returnDateInput = document.getElementById('return');
+            
+            if (oneWayRadio && roundTripRadio && returnDateContainer && returnDateInput) {
+                // One-way selection
+                oneWayRadio.addEventListener('change', function() {
+                    if (this.checked) {
+                        returnDateContainer.style.display = 'none';
+                        returnDateInput.removeAttribute('required');
+                    }
+                });
+                
+                // Round-trip selection
+                roundTripRadio.addEventListener('change', function() {
+                    if (this.checked) {
+                        returnDateContainer.style.display = 'block';
+                        returnDateInput.setAttribute('required', 'required');
+                        
+                        // Set minimum date for return (must be after departure)
+                        const departDate = document.getElementById('depart').value;
+                        if (departDate) {
+                            returnDateInput.min = departDate;
+                            
+                            // Set default return date to one week after departure if not set
+                            if (!returnDateInput.value) {
+                                const defaultReturn = new Date(departDate);
+                                defaultReturn.setDate(defaultReturn.getDate() + 7);
+                                returnDateInput.value = defaultReturn.toISOString().split('T')[0];
+                            }
+                        }
+                    }
+                });
+                
+                // Ensure return date is after departure date
+                const departureDateInput = document.getElementById('depart');
+                if (departureDateInput) {
+                    departureDateInput.addEventListener('change', function() {
+                        if (roundTripRadio.checked) {
+                            const departDate = this.value;
+                            returnDateInput.min = departDate;
+                            
+                            // If return date is before departure date, update it
+                            if (returnDateInput.value && returnDateInput.value < departDate) {
+                                returnDateInput.value = departDate;
+                            }
+                        }
+                    });
+                }
+            }
         });
         
         // Run once more when everything is loaded

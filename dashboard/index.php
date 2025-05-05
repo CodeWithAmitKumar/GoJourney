@@ -67,6 +67,7 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
     <link rel="stylesheet" href="css/travel_search.css">
     <link rel="stylesheet" href="css/visibility_enhancements.css">
     <link rel="stylesheet" href="css/footer-fix.css">
+    <link rel="stylesheet" href="css/flight_booking.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -264,6 +265,20 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
                         <h3>Book Flight</h3>
                         <p>Search for flights, compare prices, and book your tickets for domestic and international destinations.</p>
                         <div class="booking-card-form">
+                            <!-- Add flight type selector -->
+                            <div class="form-group flight-type-selector">
+                                <div class="radio-group">
+                                    <label class="radio-container">
+                                        <input type="radio" name="flight-type" id="one-way" value="one-way" checked>
+                                        <span class="radio-label">One Way</span>
+                                    </label>
+                                    <label class="radio-container">
+                                        <input type="radio" name="flight-type" id="round-trip" value="round-trip">
+                                        <span class="radio-label">Round Trip</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="flight-from">From</label>
@@ -279,7 +294,7 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
                                     <label for="flight-depart">Departure</label>
                                     <input type="date" id="flight-depart" class="form-control">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group return-date-container" style="display: none;">
                                     <label for="flight-return">Return</label>
                                     <input type="date" id="flight-return" class="form-control">
                                 </div>
@@ -596,6 +611,7 @@ date_default_timezone_set('Asia/Kolkata'); // Set to your local timezone
     <script src="dashboard-fixes.js"></script>
     <script src="js/travel_search.js"></script>
     <script src="js/visibility_enhancements.js"></script>
+    <script src="js/flight_booking.js"></script>
     <script>
         // Clean up any unwanted text nodes that might appear at the end of the body
         document.addEventListener('DOMContentLoaded', function() {
