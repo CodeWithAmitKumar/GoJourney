@@ -7,11 +7,11 @@ if(isset($_GET['action']) && $_GET['action'] == 'change_status' && isset($_GET['
     // Validate status
     $valid_statuses = ['confirmed', 'pending', 'cancelled', 'completed'];
     if(in_array($new_status, $valid_statuses)) {
-        // Check if hotel_bookings table exists
-        $check_table = mysqli_query($conn, "SHOW TABLES LIKE 'hotel_bookings'");
+        // Check if train_bookings table exists
+        $check_table = mysqli_query($conn, "SHOW TABLES LIKE 'train_bookings'");
         if(mysqli_num_rows($check_table) > 0) {
             // Update status
-            if(mysqli_query($conn, "UPDATE hotel_bookings SET status = '$new_status' WHERE id = $booking_id")) {
+            if(mysqli_query($conn, "UPDATE train_bookings SET status = '$new_status' WHERE id = $booking_id")) {
                 $action_message = "Booking status updated successfully.";
                 $action_status = "success";
             } else {
@@ -19,7 +19,7 @@ if(isset($_GET['action']) && $_GET['action'] == 'change_status' && isset($_GET['
                 $action_status = "danger";
             }
         } else {
-            $action_message = "Hotel bookings table does not exist.";
+            $action_message = "Train bookings table does not exist.";
             $action_status = "danger";
         }
     } else {
@@ -44,102 +44,113 @@ $search_condition = '';
 $conditions = [];
 
 if(!empty($search)) {
-    $conditions[] = "(h.hotel_name LIKE '%$search%' OR u.full_name LIKE '%$search%' OR u.user_email LIKE '%$search%' OR hb.booking_number LIKE '%$search%')";
+    $conditions[] = "(t.train_name LIKE '%$search%' OR t.train_number LIKE '%$search%' OR u.full_name LIKE '%$search%' OR u.user_email LIKE '%$search%' OR tb.booking_number LIKE '%$search%')";
 }
 
 if(!empty($status_filter)) {
-    $conditions[] = "hb.status = '$status_filter'";
+    $conditions[] = "tb.status = '$status_filter'";
 }
 
 if(!empty($date_from)) {
-    $conditions[] = "hb.check_in_date >= '$date_from'";
+    $conditions[] = "tb.journey_date >= '$date_from'";
 }
 
 if(!empty($date_to)) {
-    $conditions[] = "hb.check_out_date <= '$date_to'";
+    $conditions[] = "tb.journey_date <= '$date_to'";
 }
 
 if(!empty($conditions)) {
     $search_condition = " WHERE " . implode(' AND ', $conditions);
 }
 
-// Check if hotels table exists, if not create it
-$check_hotels_table = mysqli_query($conn, "SHOW TABLES LIKE 'hotels'");
-if(mysqli_num_rows($check_hotels_table) == 0) {
-    // Create hotels table
-    $create_hotels_table_sql = "CREATE TABLE hotels (
+// Check if trains table exists, if not create it
+$check_trains_table = mysqli_query($conn, "SHOW TABLES LIKE 'trains'");
+if(mysqli_num_rows($check_trains_table) == 0) {
+    // Create trains table
+    $create_trains_table_sql = "CREATE TABLE trains (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        hotel_name VARCHAR(100) NOT NULL,
-        location VARCHAR(100) NOT NULL,
-        description TEXT,
-        amenities TEXT,
-        price_per_night DECIMAL(10,2) NOT NULL,
-        room_types TEXT NOT NULL,
-        rating DECIMAL(3,1),
+        train_name VARCHAR(100) NOT NULL,
+        train_number VARCHAR(20) NOT NULL,
+        source VARCHAR(100) NOT NULL,
+        destination VARCHAR(100) NOT NULL,
+        departure_time TIME NOT NULL,
+        arrival_time TIME NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        seats_available INT NOT NULL,
+        class_options VARCHAR(255) NOT NULL,
+        duration VARCHAR(50) NOT NULL,
         image VARCHAR(255),
         status VARCHAR(20) DEFAULT 'active',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
     
-    mysqli_query($conn, $create_hotels_table_sql);
+    mysqli_query($conn, $create_trains_table_sql);
     
     // Insert some sample data if table was just created
-    $sample_hotels = [
+    $sample_trains = [
         [
-            'hotel_name' => 'Taj Palace',
-            'location' => 'Mumbai',
-            'description' => 'Luxury hotel in the heart of Mumbai offering world-class facilities and services.',
-            'amenities' => 'Free WiFi,Swimming Pool,Spa,Restaurant,Bar,24-Hour Front Desk,Room Service',
-            'price_per_night' => 12000,
-            'room_types' => 'Deluxe Room,Superior Room,Executive Suite,Presidential Suite',
-            'rating' => 4.8,
-            'image' => 'assets/images/hotels/taj-palace.jpg',
+            'train_name' => 'Rajdhani Express',
+            'train_number' => 'RJ-123',
+            'source' => 'Delhi',
+            'destination' => 'Mumbai',
+            'departure_time' => '16:00:00',
+            'arrival_time' => '08:00:00',
+            'price' => 1200,
+            'seats_available' => 500,
+            'class_options' => 'Sleeper,AC 3 Tier,AC 2 Tier,AC First Class',
+            'duration' => '16h 0m',
+            'image' => 'assets/images/trains/rajdhani.jpg',
             'status' => 'active'
         ],
         [
-            'hotel_name' => 'The Leela Palace',
-            'location' => 'Delhi',
-            'description' => 'A 5-star luxury hotel with modern amenities and traditional Indian hospitality.',
-            'amenities' => 'Free WiFi,Swimming Pool,Spa,Restaurant,Bar,Fitness Center,Airport Shuttle,Business Center',
-            'price_per_night' => 15000,
-            'room_types' => 'Deluxe Room,Royal Club Room,Executive Suite,Presidential Suite',
-            'rating' => 4.9,
-            'image' => 'assets/images/hotels/leela-palace.jpg',
+            'train_name' => 'Shatabdi Express',
+            'train_number' => 'SH-456',
+            'source' => 'Mumbai',
+            'destination' => 'Pune',
+            'departure_time' => '06:00:00',
+            'arrival_time' => '10:00:00',
+            'price' => 800,
+            'seats_available' => 400,
+            'class_options' => 'Chair Car,Executive Chair Car',
+            'duration' => '4h 0m',
+            'image' => 'assets/images/trains/shatabdi.jpg',
             'status' => 'active'
         ],
         [
-            'hotel_name' => 'JW Marriott',
-            'location' => 'Bangalore',
-            'description' => 'Contemporary luxury hotel offering sophisticated accommodation in Bangalore\'s business district.',
-            'amenities' => 'Free WiFi,Swimming Pool,Spa,Restaurant,Bar,Fitness Center,Conference Room',
-            'price_per_night' => 10000,
-            'room_types' => 'Deluxe Room,Executive Room,Suite',
-            'rating' => 4.7,
-            'image' => 'assets/images/hotels/jw-marriott.jpg',
+            'train_name' => 'Duronto Express',
+            'train_number' => 'DR-789',
+            'source' => 'Chennai',
+            'destination' => 'Bangalore',
+            'departure_time' => '23:00:00',
+            'arrival_time' => '06:00:00',
+            'price' => 950,
+            'seats_available' => 450,
+            'class_options' => 'Sleeper,AC 3 Tier,AC 2 Tier',
+            'duration' => '7h 0m',
+            'image' => 'assets/images/trains/duronto.jpg',
             'status' => 'active'
         ]
     ];
     
-    foreach($sample_hotels as $hotel) {
-        $insert_sql = "INSERT INTO hotels (hotel_name, location, description, amenities, price_per_night, room_types, rating, image, status) 
-                      VALUES ('{$hotel['hotel_name']}', '{$hotel['location']}', '{$hotel['description']}', '{$hotel['amenities']}', {$hotel['price_per_night']}, '{$hotel['room_types']}', {$hotel['rating']}, '{$hotel['image']}', '{$hotel['status']}')";
+    foreach($sample_trains as $train) {
+        $insert_sql = "INSERT INTO trains (train_name, train_number, source, destination, departure_time, arrival_time, price, seats_available, class_options, duration, image, status) 
+                      VALUES ('{$train['train_name']}', '{$train['train_number']}', '{$train['source']}', '{$train['destination']}', '{$train['departure_time']}', '{$train['arrival_time']}', {$train['price']}, {$train['seats_available']}, '{$train['class_options']}', '{$train['duration']}', '{$train['image']}', '{$train['status']}')";
         mysqli_query($conn, $insert_sql);
     }
 }
 
-// Check if hotel_bookings table exists, if not create it
-$check_table = mysqli_query($conn, "SHOW TABLES LIKE 'hotel_bookings'");
+// Check if train_bookings table exists, if not create it
+$check_table = mysqli_query($conn, "SHOW TABLES LIKE 'train_bookings'");
 if(mysqli_num_rows($check_table) == 0) {
-    // Create hotel_bookings table
-    $create_table_sql = "CREATE TABLE hotel_bookings (
+    // Create train_bookings table
+    $create_table_sql = "CREATE TABLE train_bookings (
         id INT AUTO_INCREMENT PRIMARY KEY,
         booking_number VARCHAR(20) NOT NULL UNIQUE,
         user_id INT NOT NULL,
-        hotel_id INT NOT NULL,
-        room_type VARCHAR(50) NOT NULL,
-        check_in_date DATE NOT NULL,
-        check_out_date DATE NOT NULL,
-        guests INT NOT NULL,
+        train_id INT NOT NULL,
+        journey_date DATE NOT NULL,
+        passengers INT NOT NULL,
+        seat_class VARCHAR(50) NOT NULL,
         total_price DECIMAL(10,2) NOT NULL,
         payment_method VARCHAR(50),
         payment_status VARCHAR(20) DEFAULT 'pending',
@@ -153,15 +164,15 @@ if(mysqli_num_rows($check_table) == 0) {
 
 // Fetch total bookings count
 $total_records = 0;
-$check_table = mysqli_query($conn, "SHOW TABLES LIKE 'hotel_bookings'");
+$check_table = mysqli_query($conn, "SHOW TABLES LIKE 'train_bookings'");
 if(mysqli_num_rows($check_table) > 0) {
-    // Only fetch counts if the hotels table also exists
-    $check_hotels_table = mysqli_query($conn, "SHOW TABLES LIKE 'hotels'");
-    if(mysqli_num_rows($check_hotels_table) > 0) {
-        $total_records_query = "SELECT COUNT(hb.id) as total 
-                                FROM hotel_bookings hb 
-                                LEFT JOIN users u ON hb.user_id = u.user_id 
-                                LEFT JOIN hotels h ON hb.hotel_id = h.id" . $search_condition;
+    // Only fetch counts if the trains table also exists
+    $check_trains_table = mysqli_query($conn, "SHOW TABLES LIKE 'trains'");
+    if(mysqli_num_rows($check_trains_table) > 0) {
+        $total_records_query = "SELECT COUNT(tb.id) as total 
+                                FROM train_bookings tb 
+                                LEFT JOIN users u ON tb.user_id = u.user_id 
+                                LEFT JOIN trains t ON tb.train_id = t.id" . $search_condition;
         $total_records_result = mysqli_query($conn, $total_records_query);
         if($total_records_result) {
             $total_records_row = mysqli_fetch_assoc($total_records_result);
@@ -173,17 +184,17 @@ $total_pages = ceil($total_records / $records_per_page);
 
 // Fetch bookings
 $bookings = [];
-$check_table = mysqli_query($conn, "SHOW TABLES LIKE 'hotel_bookings'");
+$check_table = mysqli_query($conn, "SHOW TABLES LIKE 'train_bookings'");
 if(mysqli_num_rows($check_table) > 0) {
-    // Only fetch bookings if the hotels table also exists
-    $check_hotels_table = mysqli_query($conn, "SHOW TABLES LIKE 'hotels'");
-    if(mysqli_num_rows($check_hotels_table) > 0) {
-        $sql = "SELECT hb.*, u.full_name, u.user_email, h.hotel_name, h.location 
-                FROM hotel_bookings hb 
-                LEFT JOIN users u ON hb.user_id = u.user_id 
-                LEFT JOIN hotels h ON hb.hotel_id = h.id" . 
+    // Only fetch bookings if the trains table also exists
+    $check_trains_table = mysqli_query($conn, "SHOW TABLES LIKE 'trains'");
+    if(mysqli_num_rows($check_trains_table) > 0) {
+        $sql = "SELECT tb.*, u.full_name, u.user_email, t.train_name, t.train_number, t.source, t.destination 
+                FROM train_bookings tb 
+                LEFT JOIN users u ON tb.user_id = u.user_id 
+                LEFT JOIN trains t ON tb.train_id = t.id" . 
                 $search_condition . 
-                " ORDER BY hb.created_at DESC LIMIT $offset, $records_per_page";
+                " ORDER BY tb.created_at DESC LIMIT $offset, $records_per_page";
         $result = mysqli_query($conn, $sql);
         if($result && mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_assoc($result)) {
@@ -203,10 +214,10 @@ $stats = [
     'revenue' => 0
 ];
 
-$check_table = mysqli_query($conn, "SHOW TABLES LIKE 'hotel_bookings'");
+$check_table = mysqli_query($conn, "SHOW TABLES LIKE 'train_bookings'");
 if(mysqli_num_rows($check_table) > 0) {
     // Get status counts
-    $status_query = "SELECT status, COUNT(*) as count FROM hotel_bookings GROUP BY status";
+    $status_query = "SELECT status, COUNT(*) as count FROM train_bookings GROUP BY status";
     $status_result = mysqli_query($conn, $status_query);
     if($status_result && mysqli_num_rows($status_result) > 0) {
         while($row = mysqli_fetch_assoc($status_result)) {
@@ -215,7 +226,7 @@ if(mysqli_num_rows($check_table) > 0) {
     }
     
     // Get total revenue from completed/confirmed bookings
-    $revenue_query = "SELECT SUM(total_price) as total_revenue FROM hotel_bookings WHERE status IN ('completed', 'confirmed')";
+    $revenue_query = "SELECT SUM(total_price) as total_revenue FROM train_bookings WHERE status IN ('completed', 'confirmed')";
     $revenue_result = mysqli_query($conn, $revenue_query);
     if($revenue_result) {
         $revenue_row = mysqli_fetch_assoc($revenue_result);
@@ -225,7 +236,7 @@ if(mysqli_num_rows($check_table) > 0) {
 ?>
 
 <div class="dashboard-title">
-    <h2>Hotel Bookings</h2>
+    <h2>Train Bookings</h2>
 </div>
 
 <?php if(isset($action_message)): ?>
@@ -238,7 +249,7 @@ if(mysqli_num_rows($check_table) > 0) {
 <div class="stats-container">
     <div class="stat-card">
         <div class="card-icon">
-            <i class="fas fa-hotel"></i>
+            <i class="fas fa-train"></i>
         </div>
         <h3>Total Bookings</h3>
         <div class="stat-value"><?php echo number_format($stats['total']); ?></div>
@@ -290,12 +301,12 @@ if(mysqli_num_rows($check_table) > 0) {
     <h3>Search & Filters</h3>
     
     <form method="GET" action="">
-        <input type="hidden" name="section" value="hotel_bookings">
+        <input type="hidden" name="section" value="train_bookings">
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
             <div>
                 <label for="search" style="display: block; margin-bottom: 5px; font-weight: 500;">Search:</label>
-                <input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by hotel, customer, booking #" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by train, customer, booking #" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
             </div>
             
             <div>
@@ -310,12 +321,12 @@ if(mysqli_num_rows($check_table) > 0) {
             </div>
             
             <div>
-                <label for="date_from" style="display: block; margin-bottom: 5px; font-weight: 500;">Check-in From:</label>
+                <label for="date_from" style="display: block; margin-bottom: 5px; font-weight: 500;">Journey From:</label>
                 <input type="date" id="date_from" name="date_from" value="<?php echo htmlspecialchars($date_from); ?>" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
             </div>
             
             <div>
-                <label for="date_to" style="display: block; margin-bottom: 5px; font-weight: 500;">Check-out To:</label>
+                <label for="date_to" style="display: block; margin-bottom: 5px; font-weight: 500;">Journey To:</label>
                 <input type="date" id="date_to" name="date_to" value="<?php echo htmlspecialchars($date_to); ?>" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
             </div>
         </div>
@@ -325,7 +336,7 @@ if(mysqli_num_rows($check_table) > 0) {
                 <i class="fas fa-search"></i> Search
             </button>
             
-            <a href="?section=hotel_bookings" style="background-color: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-flex; align-items: center;">
+            <a href="?section=train_bookings" style="background-color: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-flex; align-items: center;">
                 <i class="fas fa-sync-alt"></i> Reset
             </a>
         </div>
@@ -334,15 +345,15 @@ if(mysqli_num_rows($check_table) > 0) {
 
 <!-- Bookings List -->
 <div class="content-section">
-    <h3>Hotel Bookings List</h3>
+    <h3>Train Bookings List</h3>
     
     <?php if(empty($bookings)): ?>
         <div style="text-align: center; padding: 30px; background-color: #f8f9fa; border-radius: 5px;">
             <?php if(!empty($search) || !empty($status_filter) || !empty($date_from) || !empty($date_to)): ?>
                 <p style="color: #6c757d;">No bookings found matching your search criteria.</p>
-                <a href="?section=hotel_bookings" style="color: var(--primary-color); text-decoration: none;">Clear search</a>
+                <a href="?section=train_bookings" style="color: var(--primary-color); text-decoration: none;">Clear search</a>
             <?php else: ?>
-                <p style="color: #6c757d;">No hotel bookings found.</p>
+                <p style="color: #6c757d;">No train bookings found.</p>
             <?php endif; ?>
         </div>
     <?php else: ?>
@@ -352,11 +363,11 @@ if(mysqli_num_rows($check_table) > 0) {
                     <tr>
                         <th>Booking #</th>
                         <th>Customer</th>
-                        <th>Hotel</th>
-                        <th>Check In</th>
-                        <th>Check Out</th>
-                        <th>Room Type</th>
-                        <th>Guests</th>
+                        <th>Train</th>
+                        <th>Route</th>
+                        <th>Journey Date</th>
+                        <th>Class</th>
+                        <th>Passengers</th>
                         <th>Total</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -371,13 +382,15 @@ if(mysqli_num_rows($check_table) > 0) {
                                 <small style="color: #6c757d;"><?php echo $booking['user_email']; ?></small>
                             </td>
                             <td>
-                                <?php echo $booking['hotel_name']; ?><br>
-                                <small style="color: #6c757d;"><?php echo $booking['location']; ?></small>
+                                <?php echo $booking['train_name']; ?><br>
+                                <small style="color: #6c757d;"><?php echo $booking['train_number']; ?></small>
                             </td>
-                            <td><?php echo date('d M Y', strtotime($booking['check_in_date'])); ?></td>
-                            <td><?php echo date('d M Y', strtotime($booking['check_out_date'])); ?></td>
-                            <td><?php echo $booking['room_type']; ?></td>
-                            <td><?php echo $booking['guests']; ?></td>
+                            <td>
+                                <?php echo $booking['source']; ?> → <?php echo $booking['destination']; ?>
+                            </td>
+                            <td><?php echo date('d M Y', strtotime($booking['journey_date'])); ?></td>
+                            <td><?php echo $booking['seat_class']; ?></td>
+                            <td><?php echo $booking['passengers']; ?></td>
                             <td>₹<?php echo number_format($booking['total_price'], 2); ?></td>
                             <td>
                                 <?php 
@@ -405,24 +418,24 @@ if(mysqli_num_rows($check_table) > 0) {
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                     <div class="dropdown-content" style="display: none; position: absolute; right: 0; background-color: white; min-width: 160px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1; border-radius: 5px;">
-                                        <a href="view_booking.php?id=<?php echo $booking['id']; ?>&type=hotel" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--dark-color);">
+                                        <a href="view_booking.php?id=<?php echo $booking['id']; ?>&type=train" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--dark-color);">
                                             <i class="fas fa-eye"></i> View Details
                                         </a>
                                         
                                         <?php if($booking['status'] == 'pending'): ?>
-                                            <a href="?section=hotel_bookings&action=change_status&id=<?php echo $booking['id']; ?>&status=confirmed" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--info-color);" onclick="return confirm('Confirm this booking?');">
+                                            <a href="?section=train_bookings&action=change_status&id=<?php echo $booking['id']; ?>&status=confirmed" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--info-color);" onclick="return confirm('Confirm this booking?');">
                                                 <i class="fas fa-check-circle"></i> Confirm
                                             </a>
                                         <?php endif; ?>
                                         
                                         <?php if($booking['status'] == 'confirmed'): ?>
-                                            <a href="?section=hotel_bookings&action=change_status&id=<?php echo $booking['id']; ?>&status=completed" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--success-color);" onclick="return confirm('Mark this booking as completed?');">
+                                            <a href="?section=train_bookings&action=change_status&id=<?php echo $booking['id']; ?>&status=completed" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--success-color);" onclick="return confirm('Mark this booking as completed?');">
                                                 <i class="fas fa-check-double"></i> Complete
                                             </a>
                                         <?php endif; ?>
                                         
                                         <?php if($booking['status'] == 'pending' || $booking['status'] == 'confirmed'): ?>
-                                            <a href="?section=hotel_bookings&action=change_status&id=<?php echo $booking['id']; ?>&status=cancelled" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--danger-color);" onclick="return confirm('Cancel this booking?');">
+                                            <a href="?section=train_bookings&action=change_status&id=<?php echo $booking['id']; ?>&status=cancelled" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--danger-color);" onclick="return confirm('Cancel this booking?');">
                                                 <i class="fas fa-times-circle"></i> Cancel
                                             </a>
                                         <?php endif; ?>
@@ -444,10 +457,10 @@ if(mysqli_num_rows($check_table) > 0) {
             <div style="margin-top: 20px; display: flex; justify-content: center;">
                 <div style="display: flex; gap: 5px;">
                     <?php if($page > 1): ?>
-                        <a href="?section=hotel_bookings&page=1<?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: var(--dark-color);">
+                        <a href="?section=train_bookings&page=1<?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: var(--dark-color);">
                             <i class="fas fa-angle-double-left"></i>
                         </a>
-                        <a href="?section=hotel_bookings&page=<?php echo $page - 1; ?><?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: var(--dark-color);">
+                        <a href="?section=train_bookings&page=<?php echo $page - 1; ?><?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: var(--dark-color);">
                             <i class="fas fa-angle-left"></i>
                         </a>
                     <?php endif; ?>
@@ -458,16 +471,16 @@ if(mysqli_num_rows($check_table) > 0) {
                     
                     for($i = $start_page; $i <= $end_page; $i++):
                     ?>
-                        <a href="?section=hotel_bookings&page=<?php echo $i; ?><?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; <?php echo $i == $page ? 'background-color: var(--primary-color); color: white;' : 'color: var(--dark-color);'; ?>">
+                        <a href="?section=train_bookings&page=<?php echo $i; ?><?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; <?php echo $i == $page ? 'background-color: var(--primary-color); color: white;' : 'color: var(--dark-color);'; ?>">
                             <?php echo $i; ?>
                         </a>
                     <?php endfor; ?>
                     
                     <?php if($page < $total_pages): ?>
-                        <a href="?section=hotel_bookings&page=<?php echo $page + 1; ?><?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: var(--dark-color);">
+                        <a href="?section=train_bookings&page=<?php echo $page + 1; ?><?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: var(--dark-color);">
                             <i class="fas fa-angle-right"></i>
                         </a>
-                        <a href="?section=hotel_bookings&page=<?php echo $total_pages; ?><?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: var(--dark-color);">
+                        <a href="?section=train_bookings&page=<?php echo $total_pages; ?><?php echo !empty($search) ? '&search='.urlencode($search) : ''; ?><?php echo !empty($status_filter) ? '&status_filter='.urlencode($status_filter) : ''; ?><?php echo !empty($date_from) ? '&date_from='.urlencode($date_from) : ''; ?><?php echo !empty($date_to) ? '&date_to='.urlencode($date_to) : ''; ?>" style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 3px; text-decoration: none; color: var(--dark-color);">
                             <i class="fas fa-angle-double-right"></i>
                         </a>
                     <?php endif; ?>

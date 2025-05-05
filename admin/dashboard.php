@@ -2,12 +2,18 @@
 session_start();
 require_once '../connection/db_connect.php';
 
+// Include the table checking function
+require_once 'check_booking_tables.php';
+
 // Check if the user is logged in as admin
 if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     // Not logged in as admin, redirect to login page
     header("Location: index.php");
     exit;
 }
+
+// Check and create required tables if they don't exist
+$table_check_result = check_booking_tables($conn);
 
 // Get current admin info
 $admin_name = isset($_SESSION['admin_name']) ? $_SESSION['admin_name'] : 'Admin';
@@ -474,16 +480,6 @@ $current_section = isset($_GET['section']) ? $_GET['section'] : 'dashboard';
                 <li>
                     <a href="?section=hotels" class="<?php echo $current_section === 'hotels' ? 'active' : ''; ?>">
                         <i class="fas fa-building"></i> Hotel Management
-                    </a>
-                </li>
-                <li>
-                    <a href="?section=flights" class="<?php echo $current_section === 'flights' ? 'active' : ''; ?>">
-                        <i class="fas fa-plane-departure"></i> Flight Schedule
-                    </a>
-                </li>
-                <li>
-                    <a href="?section=trains" class="<?php echo $current_section === 'trains' ? 'active' : ''; ?>">
-                        <i class="fas fa-subway"></i> Train Schedule
                     </a>
                 </li>
             </ul>
