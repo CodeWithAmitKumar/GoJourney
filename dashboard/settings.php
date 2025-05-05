@@ -234,8 +234,7 @@ if (isset($_POST['delete_account'])) {
             <a href="index.php" class="logo">GoJourney</a>
             <div class="nav-links">
                 <a href="index.php" title="Home"><i class="fas fa-home"></i></a>
-                <a href="#" title="Wishlist"><i class="fas fa-heart"></i></a>
-                <a href="#" title="Cart"><i class="fas fa-shopping-cart"></i></a>
+                <a href="my_bookings.php" title="Booking History"><i class="fas fa-history"></i></a>
                 <button id="theme-toggle" title="Toggle Theme" class="theme-toggle-btn">
                     <i class="fas fa-moon"></i>
                     <i class="fas fa-sun" style="display: none;"></i>
@@ -261,10 +260,6 @@ if (isset($_POST['delete_account'])) {
                 <div class="welcome-message">
                     <span>Account Settings</span>
                     <div class="welcome-subtitle">Manage your account preferences and security settings</div>
-                </div>
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search destinations...">
-                    <i class="fas fa-search search-icon"></i>
                 </div>
             </div>
             

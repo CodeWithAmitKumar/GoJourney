@@ -411,8 +411,11 @@ $pageTitle = ($bookingType === 'train') ? 'Train Booking' : 'Flight Booking';
             
             <div class="nav-links">
                 <a href="index.php" title="Home"><i class="fas fa-home"></i></a>
-                <a href="#" title="Wishlist"><i class="fas fa-heart"></i></a>
-                <a href="#" title="Cart"><i class="fas fa-shopping-cart"></i></a>
+                <a href="my_bookings.php" title="Booking History"><i class="fas fa-history"></i></a>
+                <button id="theme-toggle" title="Toggle Theme" class="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun" style="display: none;"></i>
+                </button>
                 <div class="profile-dropdown">
                     <a href="#" class="profile-icon" title="Profile">
                         <i class="fas fa-user-circle"></i>
