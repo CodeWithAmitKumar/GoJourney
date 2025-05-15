@@ -34,16 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = $_POST['password'];
     
-    // For debugging - check input vs expected
-    $input_info = "Input: Email='$email', Password='$password'";
-    $expected_info = "Expected: Email='" . ADMIN_EMAIL . "', Password='" . ADMIN_PASSWORD . "'";
-    $comparison = "Comparison: " . ($email === ADMIN_EMAIL ? "Email matches" : "Email doesn't match") . 
-                  ", " . ($password === ADMIN_PASSWORD ? "Password matches" : "Password doesn't match");
-    error_log($input_info);
-    error_log($expected_info);
-    error_log($comparison);
-    
-    // Check for admin credentials
+    // First check hardcoded admin credentials
     if ($email === ADMIN_EMAIL && $password === ADMIN_PASSWORD) {
         // Set admin session
         $_SESSION['admin_logged_in'] = true;
@@ -54,15 +45,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Redirect to admin dashboard
         header("Location: dashboard.php");
         exit;
-    } else {
+    } 
+    // Check database for admin credentials
+    else {
+        // Check if admins table exists
+        $check_table = mysqli_query($conn, "SHOW TABLES LIKE 'admins'");
+        if (mysqli_num_rows($check_table) > 0) {
+            // Check admin credentials from database
+            $query = "SELECT * FROM admins WHERE email = '$email' AND is_active = 1";
+            $result = mysqli_query($conn, $query);
+            
+            if ($result && mysqli_num_rows($result) > 0) {
+                $admin = mysqli_fetch_assoc($result);
+                
+                // Verify password
+                if (password_verify($password, $admin['password_hash'])) {
+                    // Set admin session
+                    $_SESSION['admin_logged_in'] = true;
+                    $_SESSION['admin_email'] = $email;
+                    $_SESSION['admin_id'] = $admin['id'];
+                    $_SESSION['admin_name'] = $admin['fullname'];
+                    
+                    // Update last login timestamp
+                    mysqli_query($conn, "UPDATE admins SET last_login = NOW() WHERE id = " . $admin['id']);
+                    
+                    // Redirect to admin dashboard
+                    header("Location: dashboard.php");
+                    exit;
+                }
+            }
+        }
+        
+        // If we get here, login failed
         $error_message = "Invalid email or password!";
-        // More specific error for debugging
-        if ($email !== ADMIN_EMAIL) {
-            error_log("Login failed: Email mismatch");
-        }
-        if ($password !== ADMIN_PASSWORD) {
-            error_log("Login failed: Password mismatch");
-        }
     }
 }
 ?>

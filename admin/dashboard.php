@@ -568,6 +568,9 @@ $current_section = isset($_GET['section']) ? $_GET['section'] : 'dashboard';
                 case 'profile':
                     include('sections/profile.php');
                     break;
+                case 'view_booking':
+                    include('sections/view_booking.php');
+                    break;
                 default:
                     // If section doesn't exist, include dashboard
                     include('sections/dashboard_content.php');

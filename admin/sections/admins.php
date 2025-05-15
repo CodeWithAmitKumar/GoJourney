@@ -1,4 +1,157 @@
 <?php
+// Handle admin deletion
+if(isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
+    $admin_id = (int)$_GET['id'];
+    
+    // Don't allow deleting the currently logged in admin
+    if(isset($_SESSION['admin_id']) && $_SESSION['admin_id'] == $admin_id) {
+        $error_message = "You cannot delete your own account!";
+    } else {
+        // Delete the admin
+        $delete_sql = "DELETE FROM admins WHERE id = $admin_id";
+        if(mysqli_query($conn, $delete_sql)) {
+            $success_message = "Admin deleted successfully!";
+        } else {
+            $error_message = "Failed to delete admin: " . mysqli_error($conn);
+        }
+    }
+}
+
+// Handle admin edit
+if(isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['id'])) {
+    $admin_id = (int)$_GET['id'];
+    
+    // Get admin details
+    $admin_sql = "SELECT * FROM admins WHERE id = $admin_id";
+    $admin_result = mysqli_query($conn, $admin_sql);
+    
+    if($admin_result && mysqli_num_rows($admin_result) > 0) {
+        $admin_to_edit = mysqli_fetch_assoc($admin_result);
+        
+        // Process edit form submission
+        if(isset($_POST['edit_admin']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Get form data
+            $fullname = mysqli_real_escape_string($conn, trim($_POST['fullname']));
+            $email = mysqli_real_escape_string($conn, trim($_POST['email']));
+            $is_active = isset($_POST['is_active']) ? 1 : 0;
+            $password = isset($_POST['password']) ? $_POST['password'] : '';
+            
+            // Validate input
+            $edit_errors = [];
+            if(empty($fullname)) {
+                $edit_errors[] = "Full name is required";
+            }
+            
+            if(empty($email)) {
+                $edit_errors[] = "Email is required";
+            } elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $edit_errors[] = "Email is not valid";
+            }
+            
+            // Check if email already exists for other admins
+            if($email != $admin_to_edit['email']) {
+                $check_email = mysqli_query($conn, "SELECT * FROM admins WHERE email = '$email' AND id != $admin_id");
+                if(mysqli_num_rows($check_email) > 0) {
+                    $edit_errors[] = "Email already exists";
+                }
+            }
+            
+            // If password is provided, validate it
+            if(!empty($password) && strlen($password) < 8) {
+                $edit_errors[] = "Password must be at least 8 characters";
+            }
+            
+            // If no errors, proceed with admin update
+            if(empty($edit_errors)) {
+                // Prepare update SQL
+                $update_sql = "UPDATE admins SET fullname = '$fullname', email = '$email', is_active = $is_active";
+                
+                // Add password update if provided
+                if(!empty($password)) {
+                    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+                    $update_sql .= ", password_hash = '$password_hash'";
+                }
+                
+                $update_sql .= " WHERE id = $admin_id";
+                
+                // Execute update
+                if(mysqli_query($conn, $update_sql)) {
+                    $success_message = "Admin updated successfully!";
+                    
+                    // Refresh admin info to display updated values
+                    $admin_result = mysqli_query($conn, $admin_sql);
+                    $admin_to_edit = mysqli_fetch_assoc($admin_result);
+                } else {
+                    $edit_errors[] = "Failed to update admin: " . mysqli_error($conn);
+                }
+            }
+        }
+        
+        // Display edit form
+        ?>
+        <div class="dashboard-title">
+            <h2>Edit Admin</h2>
+            <a href="?section=admins" style="padding: 8px 15px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; font-size: 14px;">
+                <i class="fas fa-arrow-left"></i> Back to Admin List
+            </a>
+        </div>
+        
+        <div class="content-section">
+            <?php if(isset($edit_errors) && !empty($edit_errors)): ?>
+                <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <?php foreach($edit_errors as $error): ?>
+                            <li><?php echo $error; ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+            
+            <?php if(isset($success_message)): ?>
+                <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                    <?php echo $success_message; ?>
+                </div>
+            <?php endif; ?>
+            
+            <form method="POST" action="" style="max-width: 600px;">
+                <div style="margin-bottom: 15px;">
+                    <label for="fullname" style="display: block; margin-bottom: 5px; font-weight: 500;">Full Name:</label>
+                    <input type="text" id="fullname" name="fullname" value="<?php echo htmlspecialchars($admin_to_edit['fullname']); ?>" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" required>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label for="email" style="display: block; margin-bottom: 5px; font-weight: 500;">Email Address:</label>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($admin_to_edit['email']); ?>" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" required>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label for="password" style="display: block; margin-bottom: 5px; font-weight: 500;">Password:</label>
+                    <input type="password" id="password" name="password" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <small style="color: #6c757d; display: block; margin-top: 5px;">Leave blank to keep current password. New password must be at least 8 characters long.</small>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" name="is_active" <?php echo $admin_to_edit['is_active'] == 1 ? 'checked' : ''; ?> style="margin-right: 10px;">
+                        <span>Active Account</span>
+                    </label>
+                </div>
+                
+                <div>
+                    <button type="submit" name="edit_admin" style="background: linear-gradient(to right, #4776E6, #8E54E9); color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                        <i class="fas fa-save"></i> Update Admin
+                    </button>
+                </div>
+            </form>
+        </div>
+        <?php
+        return; // Skip the rest of the file
+    } else {
+        // Admin not found, redirect back to admin list
+        $error_message = "Admin not found!";
+    }
+}
+
 // Check for admin add form submission
 if(isset($_POST['add_admin']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     // Get form data
@@ -97,6 +250,12 @@ if(mysqli_num_rows($check_table) > 0) {
                     <li><?php echo $error; ?></li>
                 <?php endforeach; ?>
             </ul>
+        </div>
+    <?php endif; ?>
+    
+    <?php if(isset($error_message)): ?>
+        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            <?php echo $error_message; ?>
         </div>
     <?php endif; ?>
     

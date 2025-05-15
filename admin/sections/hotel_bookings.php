@@ -405,7 +405,7 @@ if(mysqli_num_rows($check_table) > 0) {
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                     <div class="dropdown-content" style="display: none; position: absolute; right: 0; background-color: white; min-width: 160px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1; border-radius: 5px;">
-                                        <a href="view_booking.php?id=<?php echo $booking['id']; ?>&type=hotel" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--dark-color);">
+                                        <a href="?section=view_booking&id=<?php echo $booking['id']; ?>&type=hotel" style="display: block; padding: 8px 12px; text-decoration: none; color: var(--dark-color);">
                                             <i class="fas fa-eye"></i> View Details
                                         </a>
                                         

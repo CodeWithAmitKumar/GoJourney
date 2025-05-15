@@ -172,7 +172,7 @@ if($revenue_result && mysqli_num_rows($revenue_result) > 0) {
                                 <td>₹' . number_format($booking['total_price'], 2) . '</td>
                                 <td><span class="status ' . $status_class . '">' . ucfirst($booking['status']) . '</span></td>
                                 <td>
-                                    <a href="view_booking.php?id=' . $booking['id'] . '&type=' . $booking['type_for_url'] . '" class="action-btn view-btn" title="View Details"><i class="fas fa-eye"></i></a>
+                                    <a href="?section=view_booking&id=' . $booking['id'] . '&type=' . $booking['type_for_url'] . '" class="action-btn view-btn" title="View Details"><i class="fas fa-eye"></i></a>
                                     <a href="?section=' . $booking['type_for_url'] . '_bookings" class="action-btn list-btn" title="View All ' . ucfirst($booking['type_for_url']) . ' Bookings"><i class="fas fa-list"></i></a>
                                 </td>
                             </tr>';

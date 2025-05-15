@@ -1,11 +1,12 @@
 <?php
-// Include database connection
-require_once '../../connection/db_connect.php';
+// Database connection is already included through dashboard.php
+// Remove the direct inclusion to prevent errors
+// require_once '../../connection/db_connect.php';
 
 // Check if booking ID and type are provided
 if(!isset($_GET['id']) || !isset($_GET['type'])) {
-    header("Location: index.php");
-    exit();
+    echo '<div class="alert alert-danger">Invalid booking information</div>';
+    return;
 }
 
 $booking_id = (int)$_GET['id'];
@@ -48,8 +49,8 @@ switch($booking_type) {
         break;
         
     default:
-        header("Location: index.php");
-        exit();
+        echo '<div class="alert alert-danger">Invalid booking type</div>';
+        return;
 }
 
 // Execute query and fetch booking details
@@ -57,9 +58,9 @@ $result = mysqli_query($conn, $sql);
 if($result && mysqli_num_rows($result) > 0) {
     $booking = mysqli_fetch_assoc($result);
 } else {
-    // If no booking found, redirect to index
-    header("Location: index.php");
-    exit();
+    // If no booking found, show error message
+    echo '<div class="alert alert-danger">Booking not found</div>';
+    return;
 }
 
 // Fetch passenger details if available
